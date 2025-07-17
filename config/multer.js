@@ -17,9 +17,9 @@ const audioMimeTypes = [
 ];
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (file.fieldname === "profilePhoto") {
+    if (file.fieldname === "profile") {
       cb(null, "uploads/profiles/");
-    } else if (file.fieldname === "coverPhoto") {
+    } else if (file.fieldname === "cover") {
       cb(null, "uploads/covers/");
     } else if (file.fieldname === "audio") {
       cb(null, "uploads/audios/");
@@ -28,14 +28,17 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    console.log(file);
+    cb(null, `user_${req.user.id}.${file.originalname.split(".").pop()}`);
   },
 });
 const fileFilter = (req, file, cb) => {
+  console.log("happening");
   if (file.fieldname === "audio" && audioMimeTypes.includes(file.mimetype)) {
+    console.log("done");
     cb(null, true);
   } else if (
-    file.fieldname === "photo" &&
+    file.fieldname === "cover" &&
     photoMimeTypes.includes(file.mimetype)
   ) {
     cb(null, true);
