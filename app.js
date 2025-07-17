@@ -1,6 +1,14 @@
-require("dotenv").config({ quiet: true });
+require("dotenv").config();
 const express = require("express");
+const cookieParser = require("cookie-parser");
+const userRoute = require("./routes/user.routes");
+const audioRoute = require("./routes/audio.routes");
+const errorHandler = require("./middlewares/errorHandler");
 const app = express();
 app.use(express.json());
-
+app.use(express.static("public"));
+app.use(cookieParser());
+app.use("/api", userRoute);
+app.use("/api", audioRoute);
+app.use(errorHandler);
 module.exports = app;
