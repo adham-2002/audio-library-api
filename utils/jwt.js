@@ -1,19 +1,20 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/users.model");
-const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+
+const REFRESH_TOKEN_SECRET = process.env.JWT_SECRET_REFRESH;
+const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET_ACCESS;
 
 function generateRefrechToken(user) {
   const payload = {
     id: user._id,
-    role:user.roles
+    role: user.roles,
   };
   return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: "30d" });
 }
 function generateAccessToken(user) {
   const payload = {
     id: user._id,
-    role:user.roles
+    role: user.roles,
   };
   return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "30d" });
 }
