@@ -6,6 +6,7 @@ const {
   uploadAudio,
   getPublicAudios,
   getUserAudios,
+  deleteAudio,
 } = require("../controllers/audio.controller");
 router.post(
   "/audio",
@@ -22,6 +23,6 @@ router.get("/audio/stream/:id", (req, res) => {});
 
 router.put("/audio/:id", () => {});
 
-router.delete("/audio/:id", authMiddleware);
+router.delete("/audio/:id", authMiddleware, deleteAudio);
 
 module.exports = router;
