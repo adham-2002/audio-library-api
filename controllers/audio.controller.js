@@ -96,13 +96,18 @@ const deleteAudio = async (req, res, next) => {
     }
 
     // Delete cover file (only if it's not the default cover)
-    if (audioDoc.coverName !== "song_cover.png") {
+    if (
+      audioDoc.coverName !== "song_cover.png" &&
+      audioDoc.coverName !== "public/images/song_cover.png"
+    ) {
       try {
         await fs.unlink(coverPath);
         console.log(`Cover file deleted: ${coverPath}`);
       } catch (fileErr) {
         console.log(`Cover file not found or already deleted: ${coverPath}`);
       }
+    } else {
+      console.log(`Skipping deletion of default cover: ${audioDoc.coverName}`);
     }
 
     res.status(200).json({
