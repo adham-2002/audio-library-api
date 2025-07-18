@@ -1,4 +1,6 @@
 const multer = require("multer");
+const fs = require("fs").promises;
+const path = require("path");
 // upload profile photo
 // upload cover photo + audio file
 const photoMimeTypes = [
@@ -17,28 +19,45 @@ const audioMimeTypes = [
 ];
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    const userId = req.user.id;
+    if (!userId) {
+      return cb(new Error("User ID is required"), false);
+    }
+    let basePath = "";
     if (file.fieldname === "profile") {
-      cb(null, "uploads/profiles/");
+      basePath = path.join("uploads", "profiles", `user_${userId}`);
     } else if (file.fieldname === "cover") {
-      cb(null, "uploads/covers/");
+      basePath = path.join("uploads", "covers", `user_${userId}`);
     } else if (file.fieldname === "audio") {
-      cb(null, "uploads/audios/");
+      basePath = path.join("uploads", "audios", `user_${userId}`);
     } else {
       cb(new Error("Invalid file field"), false);
     }
+    fs.mkdir(basePath, { recursive: true })
+      .then(() => cb(null, basePath))
+      .catch((err) => cb(err));
   },
   filename: (req, file, cb) => {
-    console.log(file);
-    cb(null, `user_${req.user.id}.${file.originalname.split(".").pop()}`);
+    const ext = path.extname(file.originalname);
+    const timestamp = Date.now();
+    let filename = "";
+    if (file.fieldname === "profile") {
+      filename = `profile${ext}`;
+    } else if (file.fieldname === "cover") {
+      filename = `cover_${timestamp}${ext}`;
+    } else if (file.fieldname === "audio") {
+      filename = `audio_${timestamp}${ext}`;
+    } else {
+      return cb(new Error("Invalid file field"));
+    }
+    cb(null, filename);
   },
 });
 const fileFilter = (req, file, cb) => {
-  console.log("happening");
   if (file.fieldname === "audio" && audioMimeTypes.includes(file.mimetype)) {
-    console.log("done");
     cb(null, true);
   } else if (
-    file.fieldname === "cover" &&
+    ["cover", "profile"].includes(file.fieldname) &&
     photoMimeTypes.includes(file.mimetype)
   ) {
     cb(null, true);
