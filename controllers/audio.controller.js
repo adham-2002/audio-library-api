@@ -21,6 +21,27 @@ const uploadAudio = async (req, res, next) => {
     next(error);
   }
 };
+const getPublicAudios = async (req, res, next) => {
+  const publicAudios = await Audio.find({ privacy: "public" });
+  res.status(200).json({
+    publicAudios,
+  });
+};
+const getUserAudios = async (req, res, next) => {
+  const userId = req.user.id;
+  const myAudios = await Audio.find({ user: userId }).populate("user");
+  console.log(myAudios);
+  if (myAudios.length === 0) {
+    return next(new Error("You don't uploaded any audios"));
+  }
+  res.status(200).json({
+    message: "successfully",
+    myAudios,
+  });
+};
+
 module.exports = {
   uploadAudio,
+  getPublicAudios,
+  getUserAudios,
 };
