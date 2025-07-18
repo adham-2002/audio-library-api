@@ -8,6 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static("public"));
 app.use(cookieParser());
+app.use(express.static("public/images"));
 app.use("/api", userRoute);
 app.use("/api", audioRoute);
 app.use(errorHandler);
