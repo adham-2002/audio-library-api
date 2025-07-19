@@ -16,7 +16,6 @@ const fs = require("fs").promises;
 const uploadAudio = async (req, res, next) => {
   const { title, genre, isPublic } = req.body;
   const userId = req.user.id;
-  // save audio in the database
   console.log(req.files.cover?.[0].filename);
   const audioData = {
     title,
@@ -57,7 +56,6 @@ const deleteAudio = async (req, res, next) => {
   const audioId = req.params.id;
 
   try {
-    // First, find the audio document to get file names
     const audioDoc = await Audio.findOne({ user: userId, _id: audioId });
 
     if (!audioDoc) {
@@ -66,14 +64,12 @@ const deleteAudio = async (req, res, next) => {
       );
     }
 
-    // Delete the audio document from database
     const deleteResult = await Audio.deleteOne({ user: userId, _id: audioId });
 
     if (deleteResult.deletedCount === 0) {
       return next(new Error("Failed to delete audio from database"));
     }
 
-    // Delete associated files
     const audioPath = path.join(
       "uploads",
       "audios",
@@ -87,7 +83,6 @@ const deleteAudio = async (req, res, next) => {
       audioDoc.coverName
     );
 
-    // Delete audio file
     try {
       await fs.unlink(audioPath);
       console.log(`Audio file deleted: ${audioPath}`);
@@ -95,7 +90,6 @@ const deleteAudio = async (req, res, next) => {
       console.log(`Audio file not found or already deleted: ${audioPath}`);
     }
 
-    // Delete cover file (only if it's not the default cover)
     if (
       audioDoc.coverName !== "song_cover.png" &&
       audioDoc.coverName !== "public/images/song_cover.png" &&
@@ -119,9 +113,43 @@ const deleteAudio = async (req, res, next) => {
     next(new Error("Failed to delete audio: " + err.message));
   }
 };
+const updateAudio = async (req, res, next) => {
+  if (!req.user || !req.user.id) {
+    return next(new Error("User not authenticated"));
+  }
+  const userId = req.user.id;
+  const audioId = req.params.id;
+  const {title,genre,isPublic} = req.body
+  const isPublicBool = isPublic === 'true' || isPublic === true;
+
+  try {
+
+     const audioDoc = await Audio.findOneAndUpdate(
+      { user: userId, _id: audioId },
+      {
+        $set: {
+          title,
+          genre,
+          privacy: isPublicBool ? "public" : "private"
+        }
+      },
+      { new: true }
+    );
+    if (!audioDoc) {
+      return next(
+        new Error("Audio not found or you are not the owner of this audio")
+      );
+    }
+    res.json({ message: 'Audio updated successfully',audio: audioDoc});
+
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   uploadAudio,
   getPublicAudios,
   getUserAudios,
   deleteAudio,
+  updateAudio,
 };

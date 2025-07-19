@@ -6,7 +6,7 @@ const { validationResult } = require("express-validator");
 
 const signup = async (req, res,next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password,role } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ message: errors.array().map(err => err.msg)});
@@ -23,12 +23,14 @@ const signup = async (req, res,next) => {
     if (!passwordValidator(password)) {
       return res.status(400).json({ message: "weak Password" });
     }
+    const userRole = role==='admin'?'admin':'user';
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       username: username,
       email: email,
       password: hashedPassword,
+      role:userRole
     });
 
     await newUser.save();

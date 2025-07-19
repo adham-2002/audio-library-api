@@ -17,6 +17,7 @@ const audioMimeTypes = [
   "audio/mp3",
   "audio/flac",
 ];
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const userId = req.user.id;
@@ -36,6 +37,7 @@ const storage = multer.diskStorage({
     fs.mkdir(basePath, { recursive: true })
       .then(() => cb(null, basePath))
       .catch((err) => cb(err));
+
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
