@@ -19,12 +19,15 @@ const audioSchema = new mongoose.Schema(
         "blues",
         "reggae",
         "metal",
+        'other'
       ],
+      required:true,
+      default:'other'
     },
     privacy: {
       type: String,
       enum: ["private", "public"],
-      default: "public",
+      default: "public"
     },
     coverName: {
       type: String,
