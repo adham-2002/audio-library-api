@@ -98,7 +98,8 @@ const deleteAudio = async (req, res, next) => {
     // Delete cover file (only if it's not the default cover)
     if (
       audioDoc.coverName !== "song_cover.png" &&
-      audioDoc.coverName !== "public/images/song_cover.png"
+      audioDoc.coverName !== "public/images/song_cover.png" &&
+      audioDoc.coverName !== "public/images/song_cover.jpg"
     ) {
       try {
         await fs.unlink(coverPath);
