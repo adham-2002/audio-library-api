@@ -16,7 +16,9 @@ const fs = require("fs");
 const uploadAudio = async (req, res, next) => {
   const { title, genre, privacy = "public" } = req.body;
   const userId = req.user.id;
-  console.log(req.files.cover?.[0].filename);
+  if (!req.files.audio?.[0].filename) {
+    return next(new Error("You Must Provide Audio "));
+  }
   const audioData = {
     title,
     genre,
@@ -53,7 +55,7 @@ const getUserAudios = async (req, res, next) => {
 };
 const deleteAudio = async (req, res, next) => {
   const userId = req.user.id;
-  const audioId = req.params.id;
+  const audioId = req.params.audioId; // Changed from req.params.id to req.params.audioId
 
   try {
     const audioDoc = await Audio.findOne({ user: userId, _id: audioId });
@@ -114,34 +116,75 @@ const deleteAudio = async (req, res, next) => {
   }
 };
 const updateAudio = async (req, res, next) => {
-  if (!req.user || !req.user.id) {
-    return next(new Error("User not authenticated"));
-  }
-  const userId = req.user.id;
-  const audioId = req.params.id;
-  const { title, genre, isPublic } = req.body;
-  const isPublicBool = isPublic === "true" || isPublic === true;
-
   try {
-    const audioDoc = await Audio.findOneAndUpdate(
-      { user: userId, _id: audioId },
-      {
-        $set: {
-          title,
-          genre,
-          privacy: isPublicBool ? "public" : "private",
-        },
-      },
-      { new: true }
-    );
-    if (!audioDoc) {
+    const { title, genre, privacy = "public" } = req.body;
+    const { audioId } = req.params;
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    const wantedAudio = await Audio.findOne({ user: userId, _id: audioId });
+    if (!wantedAudio) {
       return next(
         new Error("Audio not found or you are not the owner of this audio")
       );
     }
-    res.json({ message: "Audio updated successfully", audio: audioDoc });
-  } catch (err) {
-    next(err);
+    if (userRole !== "admin" && wantedAudio.user.toString() !== userId) {
+      return next(new Error("You are Not Authorized to update This Audio"));
+    }
+
+    // Update cover if provided
+    if (req.files?.cover?.[0]) {
+      // Delete old cover if it's not a default one
+      if (
+        wantedAudio.coverName !== "song_cover.png" &&
+        wantedAudio.coverName !== "public/images/song_cover.png" &&
+        wantedAudio.coverName !== "public/images/song_cover.jpg"
+      ) {
+        const oldCoverPath = path.join(
+          "uploads",
+          "covers",
+          `user_${userId}`,
+          wantedAudio.coverName
+        );
+        try {
+          await fs.promises.unlink(oldCoverPath);
+          console.log(`Old cover deleted: ${oldCoverPath}`);
+        } catch (err) {
+          console.log(`Could not delete old cover: ${err.message}`);
+        }
+      }
+      wantedAudio.coverName = req.files.cover[0].filename;
+    }
+
+    // Update audio if provided
+    if (req.files?.audio?.[0]) {
+      const oldAudioPath = path.join(
+        "uploads",
+        "audios",
+        `user_${userId}`,
+        wantedAudio.audioName
+      );
+      try {
+        await fs.promises.unlink(oldAudioPath);
+        console.log(`Old audio deleted: ${oldAudioPath}`);
+      } catch (err) {
+        console.log(`Could not delete old audio: ${err.message}`);
+      }
+      wantedAudio.audioName = req.files.audio[0].filename;
+    }
+
+    // Update other fields
+    if (title) wantedAudio.title = title;
+    if (genre) wantedAudio.genre = genre;
+    if (privacy) wantedAudio.privacy = privacy;
+
+    await wantedAudio.save();
+    res.status(200).json({
+      message: "Audio updated successfully",
+      audio: wantedAudio,
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
