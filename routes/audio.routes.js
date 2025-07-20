@@ -8,22 +8,34 @@ const {
   getUserAudios,
   deleteAudio,
   streamAudio,
+  updateAudio,
 } = require("../controllers/audio.controller");
 router.post(
   "/audio",
-  authMiddleware,
-  upload.fields([{ name: "audio" }, { name: "cover" }]),
+  authMiddleware(["user", "admin"]),
+  upload.fields([
+    { name: "audio", maxCount: 1 },
+    { name: "cover", maxCount: 1 },
+  ]),
   uploadAudio
 );
 
 router.get("/audio", getPublicAudios);
 
-router.get("/audio/mine", authMiddleware, getUserAudios);
+router.get("/audio/mine", authMiddleware(), getUserAudios);
 
 router.get("/audio/stream/:audioId", streamAudio);
 
-router.put("/audio/:id");
+router.put(
+  "/audio/:audioId",
+  authMiddleware(["admin", "user"]),
+  upload.fields([
+    { name: "audio", maxCount: 1 },
+    { name: "cover", maxCount: 1 },
+  ]),
+  updateAudio
+);
 
-router.delete("/audio/:id", authMiddleware, deleteAudio);
+router.delete("/audio/:audioId", authMiddleware(), deleteAudio);
 
 module.exports = router;
