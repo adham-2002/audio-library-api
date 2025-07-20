@@ -3,15 +3,14 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const userRoute = require("./routes/user.routes");
 const audioRoute = require("./routes/audio.routes");
-const adminRoute = require('./routes/admin.routes')
+const adminRoute = require("./routes/admin.routes");
 const errorHandler = require("./middlewares/errorHandler");
 const app = express();
 app.use(express.json());
-app.use(express.static("public"));
 app.use(cookieParser());
 app.use(express.static("public/images"));
-app.use("/api", userRoute);
-app.use("/api", audioRoute);
-app.use("/api", adminRoute)
+app.use("/api/v1", userRoute);
+app.use("/api/v1", audioRoute);
+app.use("/api/v1", adminRoute);
 app.use(errorHandler);
 module.exports = app;

@@ -5,7 +5,7 @@
 
 const Audio = require("../models/audio.model");
 const path = require("path");
-const fs = require("fs").promises;
+const fs = require("fs");
 // async function deleteFile(path) {
 //   try {
 //     await fs.unlink(path);
@@ -14,13 +14,13 @@ const fs = require("fs").promises;
 //   }
 // }
 const uploadAudio = async (req, res, next) => {
-  const { title, genre, isPublic } = req.body;
+  const { title, genre, privacy = "public" } = req.body;
   const userId = req.user.id;
   console.log(req.files.cover?.[0].filename);
   const audioData = {
     title,
     genre,
-    privacy: isPublic ? "public" : "private",
+    privacy,
     user: userId,
     coverName: req.files.cover?.[0].filename,
     audioName: req.files.audio?.[0].filename,
@@ -119,19 +119,18 @@ const updateAudio = async (req, res, next) => {
   }
   const userId = req.user.id;
   const audioId = req.params.id;
-  const {title,genre,isPublic} = req.body
-  const isPublicBool = isPublic === 'true' || isPublic === true;
+  const { title, genre, isPublic } = req.body;
+  const isPublicBool = isPublic === "true" || isPublic === true;
 
   try {
-
-     const audioDoc = await Audio.findOneAndUpdate(
+    const audioDoc = await Audio.findOneAndUpdate(
       { user: userId, _id: audioId },
       {
         $set: {
           title,
           genre,
-          privacy: isPublicBool ? "public" : "private"
-        }
+          privacy: isPublicBool ? "public" : "private",
+        },
       },
       { new: true }
     );
@@ -140,11 +139,35 @@ const updateAudio = async (req, res, next) => {
         new Error("Audio not found or you are not the owner of this audio")
       );
     }
-    res.json({ message: 'Audio updated successfully',audio: audioDoc});
-
+    res.json({ message: "Audio updated successfully", audio: audioDoc });
   } catch (err) {
     next(err);
   }
+};
+
+const streamAudio = async (req, res, next) => {
+  const { audioId } = req.params;
+  const audioDoc = await Audio.findById(audioId);
+  if (!audioDoc) {
+    return next(new Error("Audio not found"));
+  }
+  // use path.resolve to get the absolute path so it not depend on the current working directory or file in which the code is running
+  const audioPath = path.resolve(
+    __dirname,
+    "..",
+    "uploads",
+    "audios",
+    `user_${audioDoc.user}`,
+    audioDoc.audioName
+  );
+  const audioStream = fs.createReadStream(audioPath);
+  audioStream.on("error", (err) => {
+    console.error("Audio stream error:", err);
+    next(new Error("Failed to stream audio"));
+  });
+  res.setHeader("Content-Type", "audio/mpeg");
+
+  audioStream.pipe(res);
 };
 module.exports = {
   uploadAudio,
@@ -152,4 +175,5 @@ module.exports = {
   getUserAudios,
   deleteAudio,
   updateAudio,
+  streamAudio,
 };

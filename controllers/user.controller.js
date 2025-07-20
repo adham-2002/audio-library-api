@@ -1,15 +1,17 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/users.model");
 const passwordValidator = require("../utils/passwordValidator");
-const { generateAccessToken, generateRefrechToken } = require("../utils/jwt");
+const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const { validationResult } = require("express-validator");
 
-const signup = async (req, res,next) => {
+const signup = async (req, res, next) => {
   try {
-    const { username, email, password,role } = req.body;
+    const { username, email, password, role } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array().map(err => err.msg)});
+      return res
+        .status(400)
+        .json({ message: errors.array().map((err) => err.msg) });
     }
     if (!username || !email || !password) {
       return res
@@ -23,21 +25,22 @@ const signup = async (req, res,next) => {
     if (!passwordValidator(password)) {
       return res.status(400).json({ message: "weak Password" });
     }
-    const userRole = role==='admin'?'admin':'user';
+    // ! we can't use role in signup  we can use seeding admin because it is not secure to allow users to choose their roles
+    const userRole = role === "admin" ? "admin" : "user";
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       username: username,
       email: email,
       password: hashedPassword,
-      role:userRole
+      role: userRole,
     });
 
     await newUser.save();
     const accessToken = generateAccessToken(newUser);
-    const refrechToken = generateRefrechToken(newUser);
-  console.log(accessToken)
-    res.cookie("refresh_token", refrechToken, {
+    const refreshToken = generateRefreshToken(newUser);
+    console.log(accessToken);
+    res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "Strict",
@@ -53,13 +56,13 @@ const signup = async (req, res,next) => {
       accessToken,
     });
   } catch (error) {
-    next(error)
+    next(error);
     return res
       .status(500)
       .json({ message: "Server error. Please try again later." });
   }
 };
-const signin = async (req, res,next) => {
+const signin = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -80,9 +83,9 @@ const signin = async (req, res,next) => {
       return res.status(400).json({ message: "Invailed Password" });
     }
     const accessToken = generateAccessToken(user);
-    const refrechToken = generateRefrechToken(user);
-    console.log(accessToken)
-    res.cookie("refresh_token", refrechToken, {
+    const refreshToken = generateRefreshToken(user);
+    console.log(accessToken);
+    res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "Strict",
@@ -98,7 +101,7 @@ const signin = async (req, res,next) => {
       accessToken,
     });
   } catch (error) {
-    next(error)
+    next(error);
     return res
       .status(500)
       .json({ message: "Server error. Please try again later." });

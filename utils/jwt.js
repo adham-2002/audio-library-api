@@ -4,7 +4,7 @@ const User = require("../models/users.model");
 const JWT_SECRET_REFRESH = process.env.JWT_SECRET_REFRESH;
 const JWT_SECRET_ACCESS = process.env.JWT_SECRET_ACCESS;
 
-function generateRefrechToken(user) {
+function generateRefreshToken(user) {
   const payload = {
     id: user._id,
     role: user.role,
@@ -29,11 +29,11 @@ async function newAccessToken(req, res) {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(404).json({ message: "User not found" });
     const newAccessToken = generateAccessToken(user);
-    console.log(newAccessToken)
-    res.json({ accesToken: newAccessToken });
+    console.log(newAccessToken);
+    res.json({ accessToken: newAccessToken });
   } catch {
     res.status(403).json({ message: "Invalid refresh token" });
   }
 }
 
-module.exports = { generateRefrechToken, generateAccessToken, newAccessToken };
+module.exports = { generateRefreshToken, generateAccessToken, newAccessToken };

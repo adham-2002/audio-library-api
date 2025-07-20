@@ -29,7 +29,7 @@ router.post(
 );
 router.post("/refresh-token", newAccessToken);
 
-router.get("/profile", authMiddleware(), (req, res) => {
+router.get("/profile", authMiddleware, (req, res) => {
   res.json({ user: req.user });
 });
 
