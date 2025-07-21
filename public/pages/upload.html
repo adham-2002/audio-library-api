@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioVibe - Upload Audio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        }
+        .main-gradient {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+        .upload-area {
+            border: 2px dashed #6b7280;
+            transition: all 0.3s ease;
+        }
+        .upload-area.dragover {
+            border-color: #8b5cf6;
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 sidebar-gradient p-6 z-10">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-purple-400">AudioVibe</h1>
+        </div>
+        
+        <nav class="space-y-4">
+            <a href="home.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="my-audios.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-music"></i>
+                <span>My Audios</span>
+            </a>
+            <a href="playlists.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-list"></i>
+                <span>My Playlists</span>
+            </a>
+            <a href="favorites.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-heart"></i>
+                <span>Favorites</span>
+            </a>
+            <a href="upload.html" class="flex items-center space-x-3 text-white bg-purple-600 px-4 py-2 rounded-lg">
+                <i class="fas fa-upload"></i>
+                <span>Upload Audio</span>
+            </a>
+        </nav>
+        
+        <div class="absolute bottom-6 left-6 right-6">
+            <a href="profile.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <button onclick="logout()" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full mt-2">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 main-gradient min-h-screen">
+        <!-- Header -->
+        <header class="p-6 border-b border-gray-700">
+            <h1 class="text-3xl font-bold">Upload Audio</h1>
+            <p class="text-gray-400 mt-1">Share your music with the world</p>
+        </header>
+
+        <!-- Content -->
+        <main class="p-6">
+            <div class="max-w-2xl mx-auto">
+                <form id="uploadForm" class="space-y-6">
+                    <!-- File Upload Area -->
+                    <div class="upload-area p-8 rounded-lg text-center" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Drag and drop your audio file here</h3>
+                        <p class="text-gray-400 mb-4">or click to browse</p>
+                        <input type="file" id="audioFile" accept="audio/*" class="hidden">
+                        <button type="button" onclick="document.getElementById('audioFile').click()" 
+                                class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg">
+                            Choose File
+                        </button>
+                        <p class="text-gray-500 text-sm mt-4">Supported formats: MP3, WAV, FLAC, AAC</p>
+                    </div>
+
+                    <!-- File Info -->
+                    <div id="fileInfo" class="hidden bg-gray-800 p-4 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-music text-purple-400 text-2xl"></i>
+                            <div>
+                                <h4 class="font-semibold" id="fileName"></h4>
+                                <p class="text-gray-400 text-sm" id="fileSize"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Song Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-white text-sm font-medium mb-2">Song Title *</label>
+                            <input type="text" id="songTitle" required 
+                                   class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                   placeholder="Enter song title">
+                        </div>
+                        <div>
+                            <label class="block text-white text-sm font-medium mb-2">Artist Name *</label>
+                            <input type="text" id="artistName" required 
+                                   class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                   placeholder="Enter artist name">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-white text-sm font-medium mb-2">Genre</label>
+                            <select id="genre" class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                <option value="">Select genre</option>
+                                <option value="pop">Pop</option>
+                                <option value="rock">Rock</option>
+                                <option value="jazz">Jazz</option>
+                                <option value="electronic">Electronic</option>
+                                <option value="classical">Classical</option>
+                                <option value="hip-hop">Hip Hop</option>
+                                <option value="country">Country</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white text-sm font-medium mb-2">Privacy</label>
+                            <select id="privacy" class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Description</label>
+                        <textarea id="description" rows="4"
+                                  class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                  placeholder="Tell us about your song..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-white text-sm font-medium mb-2">Tags</label>
+                        <input type="text" id="tags" 
+                               class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                               placeholder="Enter tags separated by commas">
+                    </div>
+
+                    <!-- Upload Progress -->
+                    <div id="uploadProgress" class="hidden">
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Uploading...</span>
+                                <span class="text-sm" id="progressPercent">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" id="progressBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="resetForm()" class="px-6 py-3 text-gray-400 hover:text-white">
+                            Cancel
+                        </button>
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold">
+                            Upload Audio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('userLoggedIn')) {
+            window.location.href = 'index.html';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const audioFile = document.getElementById('audioFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        audioFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (file.type.startsWith('audio/')) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.classList.remove('hidden');
+                
+                // Auto-fill song title from filename
+                const title = file.name.replace(/\.[^/.]+$/, "");
+                document.getElementById('songTitle').value = title;
+            } else {
+                alert('Please select a valid audio file.');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function resetForm() {
+            document.getElementById('uploadForm').reset();
+            fileInfo.classList.add('hidden');
+            document.getElementById('uploadProgress').classList.add('hidden');
+        }
+
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const file = audioFile.files[0];
+            const title = document.getElementById('songTitle').value;
+            const artist = document.getElementById('artistName').value;
+            
+            if (!file || !title || !artist) {
+                alert('Please fill in all required fields and select an audio file.');
+                return;
+            }
+
+            // Show progress
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            
+            progressDiv.classList.remove('hidden');
+            
+            // Simulate upload progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = Math.round(progress) + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        alert('Audio uploaded successfully!');
+                        window.location.href = 'my-audios.html';
+                    }, 500);
+                }
+            }, 200);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioVibe - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        }
+        .main-gradient {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 sidebar-gradient p-6 z-10">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-red-400">Admin Panel</h1>
+        </div>
+        
+        <nav class="space-y-4">
+            <a href="home.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-home"></i>
+                <span>Back to Home</span>
+            </a>
+            <a href="#" onclick="showSection('dashboard')" class="flex items-center space-x-3 text-white bg-red-600 px-4 py-2 rounded-lg">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" onclick="showSection('users')" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="#" onclick="showSection('audios')" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-music"></i>
+                <span>All Audios</span>
+            </a>
+            <a href="#" onclick="showSection('reports')" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-flag"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+        
+        <div class="absolute bottom-6 left-6 right-6">
+            <button onclick="logout()" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 main-gradient min-h-screen">
+        <!-- Header -->
+        <header class="p-6 border-b border-gray-700">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" id="adminSearch" placeholder="Search users, audios..." 
+                               class="bg-gray-700 text-white px-4 py-2 rounded-full w-80 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section p-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Total Users</p>
+                            <p class="text-2xl font-bold">1,234</p>
+                        </div>
+                        <i class="fas fa-users text-blue-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Total Audios</p>
+                            <p class="text-2xl font-bold">5,678</p>
+                        </div>
+                        <i class="fas fa-music text-green-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Active Reports</p>
+                            <p class="text-2xl font-bold">23</p>
+                        </div>
+                        <i class="fas fa-flag text-red-400 text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Storage Used</p>
+                            <p class="text-2xl font-bold">2.4TB</p>
+                        </div>
+                        <i class="fas fa-hdd text-purple-400 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-user-plus text-green-400"></i>
+                            <span>New user registered: john@example.com</span>
+                        </div>
+                        <span class="text-gray-400 text-sm">2 minutes ago</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-upload text-blue-400"></i>
+                            <span>Audio uploaded: "Summer Vibes" by Artist123</span>
+                        </div>
+                        <span class="text-gray-400 text-sm">5 minutes ago</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-flag text-red-400"></i>
+                            <span>Content reported: "Inappropriate Song Title"</span>
+                        </div>
+                        <span class="text-gray-400 text-sm">10 minutes ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users" class="section p-6 hidden">
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">User Management</h3>
+                    <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm">
+                        <i class="fas fa-user-plus mr-2"></i>Add User
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="pb-3">User</th>
+                                <th class="pb-3">Email</th>
+                                <th class="pb-3">Joined</th>
+                                <th class="pb-3">Status</th>
+                                <th class="pb-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="space-y-2">
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                                            <span class="text-sm font-semibold">JD</span>
+                                        </div>
+                                        <span>John Doe</span>
+                                    </div>
+                                </td>
+                                <td class="py-3">john@example.com</td>
+                                <td class="py-3">2024-01-15</td>
+                                <td class="py-3">
+                                    <span class="bg-green-600 text-xs px-2 py-1 rounded">Active</span>
+                                </td>
+                                <td class="py-3">
+                                    <button class="text-blue-400 hover:text-blue-300 mr-2">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-400 hover:text-red-300">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="py-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <span class="text-sm font-semibold">JS</span>
+                                        </div>
+                                        <span>Jane Smith</span>
+                                    </div>
+                                </td>
+                                <td class="py-3">jane@example.com</td>
+                                <td class="py-3">2024-01-10</td>
+                                <td class="py-3">
+                                    <span class="bg-green-600 text-xs px-2 py-1 rounded">Active</span>
+                                </td>
+                                <td class="py-3">
+                                    <button class="text-blue-400 hover:text-blue-300 mr-2">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-red-400 hover:text-red-300">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audios Section -->
+        <div id="audios" class="section p-6 hidden">
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Audio Management</h3>
+                    <div class="flex space-x-2">
+                        <select class="bg-gray-700 text-white px-3 py-2 rounded">
+                            <option>All</option>
+                            <option>Public</option>
+                            <option>Private</option>
+                            <option>Reported</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded flex items-center justify-center">
+                                <i class="fas fa-music text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Midnight Dreams</h4>
+                                <p class="text-gray-400 text-sm">by John Doe • 1,234 plays</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="bg-green-600 text-xs px-2 py-1 rounded">Public</span>
+                                    <span class="text-gray-400 text-xs">Uploaded 2 days ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-blue-400 hover:text-blue-300 p-2">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="text-yellow-400 hover:text-yellow-300 p-2">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteAudio('Midnight Dreams')" class="text-red-400 hover:text-red-300 p-2">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center">
+                                <i class="fas fa-music text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Ocean Waves</h4>
+                                <p class="text-gray-400 text-sm">by Nature Sounds • 892 plays</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="bg-red-600 text-xs px-2 py-1 rounded">Private</span>
+                                    <span class="text-gray-400 text-xs">Uploaded 1 week ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-blue-400 hover:text-blue-300 p-2">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="text-yellow-400 hover:text-yellow-300 p-2">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteAudio('Ocean Waves')" class="text-red-400 hover:text-red-300 p-2">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg border border-red-500/30">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded flex items-center justify-center">
+                                <i class="fas fa-music text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Reported Song</h4>
+                                <p class="text-gray-400 text-sm">by BadUser • 45 plays</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="bg-red-600 text-xs px-2 py-1 rounded">Reported</span>
+                                    <span class="text-gray-400 text-xs">3 reports</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="text-blue-400 hover:text-blue-300 p-2">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="text-green-400 hover:text-green-300 p-2" title="Approve">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button onclick="deleteAudio('Reported Song')" class="text-red-400 hover:text-red-300 p-2">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="section p-6 hidden">
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h3 class="text-lg font-semibold mb-4">Content Reports</h3>
+                <div class="space-y-3">
+                    <div class="p-4 bg-gray-700 rounded-lg border border-red-500/30">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-red-400">Inappropriate Content</h4>
+                            <span class="text-gray-400 text-sm">2 hours ago</span>
+                        </div>
+                        <p class="text-gray-300 mb-2">Song: "Offensive Title" by BadUser</p>
+                        <p class="text-gray-400 text-sm mb-3">Reported by: user@example.com</p>
+                        <div class="flex space-x-2">
+                            <button class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
+                                Dismiss
+                            </button>
+                            <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
+                                Remove Content
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-gray-700 rounded-lg border border-yellow-500/30">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-yellow-400">Copyright Violation</h4>
+                            <span class="text-gray-400 text-sm">1 day ago</span>
+                        </div>
+                        <p class="text-gray-300 mb-2">Song: "Popular Song Cover" by CoverArtist</p>
+                        <p class="text-gray-400 text-sm mb-3">Reported by: copyright@musiclabel.com</p>
+                        <div class="flex space-x-2">
+                            <button class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
+                                Dismiss
+                            </button>
+                            <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
+                                Remove Content
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is admin
+        if (!localStorage.getItem('userLoggedIn') || localStorage.getItem('isAdmin') !== 'true') {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = 'home.html';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.add('hidden'));
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.remove('hidden');
+            
+            // Update navigation
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.classList.remove('bg-red-600', 'text-white');
+                link.classList.add('text-gray-300', 'hover:text-white', 'hover:bg-gray-700');
+            });
+            
+            event.target.closest('a').classList.add('bg-red-600', 'text-white');
+            event.target.closest('a').classList.remove('text-gray-300', 'hover:text-white', 'hover:bg-gray-700');
+        }
+
+        function deleteAudio(audioName) {
+            if (confirm(`Are you sure you want to delete "${audioName}"? This action cannot be undone.`)) {
+                alert(`"${audioName}" has been deleted successfully.`);
+                // Here you would typically make an API call to delete the audio
+            }
+        }
+
+        // Search functionality
+        document.getElementById('adminSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            // Implement search logic here
+            console.log('Searching for:', searchTerm);
+        });
+    </script>
+</body>
+</html>

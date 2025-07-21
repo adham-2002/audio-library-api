@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioVibe - Favorites</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        }
+        .main-gradient {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 sidebar-gradient p-6 z-10">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-purple-400">AudioVibe</h1>
+        </div>
+        
+        <nav class="space-y-4">
+            <a href="home.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="my-audios.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-music"></i>
+                <span>My Audios</span>
+            </a>
+            <a href="playlists.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-list"></i>
+                <span>My Playlists</span>
+            </a>
+            <a href="favorites.html" class="flex items-center space-x-3 text-white bg-purple-600 px-4 py-2 rounded-lg">
+                <i class="fas fa-heart"></i>
+                <span>Favorites</span>
+            </a>
+            <a href="upload.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-upload"></i>
+                <span>Upload Audio</span>
+            </a>
+        </nav>
+        
+        <div class="absolute bottom-6 left-6 right-6">
+            <a href="profile.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <button onclick="logout()" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full mt-2">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 main-gradient min-h-screen">
+        <!-- Header -->
+        <header class="p-6 border-b border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold">Favorites</h1>
+                    <p class="text-gray-400 mt-1">Your liked songs</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg">
+                        <i class="fas fa-play mr-2"></i>Play All
+                    </button>
+                    <button class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">
+                        <i class="fas fa-random mr-2"></i>Shuffle
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="p-6">
+            <div class="space-y-2">
+                <!-- Favorite Song -->
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-800 cursor-pointer group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded flex items-center justify-center">
+                        <i class="fas fa-play text-white group-hover:block"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Midnight Dreams</h3>
+                        <p class="text-gray-400 text-sm">Dream Artist</p>
+                    </div>
+                    <span class="text-gray-400 text-sm">3:45</span>
+                    <button class="text-red-500 hover:text-red-400">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-white opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+
+                <!-- Favorite Song -->
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-800 cursor-pointer group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center">
+                        <i class="fas fa-play text-white group-hover:block"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Ocean Waves</h3>
+                        <p class="text-gray-400 text-sm">Nature Sounds</p>
+                    </div>
+                    <span class="text-gray-400 text-sm">5:12</span>
+                    <button class="text-red-500 hover:text-red-400">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-white opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+
+                <!-- Favorite Song -->
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-800 cursor-pointer group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded flex items-center justify-center">
+                        <i class="fas fa-play text-white group-hover:block"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Jazz Vibes</h3>
+                        <p class="text-gray-400 text-sm">Jazz Collective</p>
+                    </div>
+                    <span class="text-gray-400 text-sm">4:23</span>
+                    <button class="text-red-500 hover:text-red-400">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-white opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+
+                <!-- Favorite Song -->
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-800 cursor-pointer group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded flex items-center justify-center">
+                        <i class="fas fa-play text-white group-hover:block"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Electric Nights</h3>
+                        <p class="text-gray-400 text-sm">Electronic Artist</p>
+                    </div>
+                    <span class="text-gray-400 text-sm">3:58</span>
+                    <button class="text-red-500 hover:text-red-400">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-white opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+
+                <!-- Favorite Song -->
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-800 cursor-pointer group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded flex items-center justify-center">
+                        <i class="fas fa-play text-white group-hover:block"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Cosmic Journey</h3>
+                        <p class="text-gray-400 text-sm">Space Sounds</p>
+                    </div>
+                    <span class="text-gray-400 text-sm">6:15</span>
+                    <button class="text-red-500 hover:text-red-400">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-white opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-16 hidden">
+                <i class="fas fa-heart text-6xl text-gray-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">No favorites yet</h3>
+                <p class="text-gray-400 mb-6">Start liking songs to see them here</p>
+                <a href="home.html" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg inline-block">
+                    Discover Music
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('userLoggedIn')) {
+            window.location.href = 'index.html';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
