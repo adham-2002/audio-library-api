@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioVibe - Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        }
+        .main-gradient {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 sidebar-gradient p-6 z-10">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-purple-400">AudioVibe</h1>
+        </div>
+        
+        <nav class="space-y-4">
+            <a href="home.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="my-audios.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-music"></i>
+                <span>My Audios</span>
+            </a>
+            <a href="playlists.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-list"></i>
+                <span>My Playlists</span>
+            </a>
+            <a href="favorites.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-heart"></i>
+                <span>Favorites</span>
+            </a>
+            <a href="upload.html" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                <i class="fas fa-upload"></i>
+                <span>Upload Audio</span>
+            </a>
+        </nav>
+        
+        <div class="absolute bottom-6 left-6 right-6">
+            <a href="profile.html" class="flex items-center space-x-3 text-white bg-purple-600 px-4 py-2 rounded-lg">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <button onclick="logout()" class="flex items-center space-x-3 text-gray-300 hover:text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full mt-2">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 main-gradient min-h-screen">
+        <!-- Header -->
+        <header class="p-6 border-b border-gray-700">
+            <h1 class="text-3xl font-bold">Profile Settings</h1>
+            <p class="text-gray-400 mt-1">Manage your account and preferences</p>
+        </header>
+
+        <!-- Content -->
+        <main class="p-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Profile Info -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-gray-800 p-6 rounded-lg text-center">
+                            <div class="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-user text-white text-4xl"></i>
+                            </div>
+                            <h2 class="text-xl font-bold mb-2" id="displayName">John Doe</h2>
+                            <p class="text-gray-400 mb-4" id="displayEmail">john@example.com</p>
+                            <button onclick="changeAvatar()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm">
+                                Change Avatar
+                            </button>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="bg-gray-800 p-6 rounded-lg mt-6">
+                            <h3 class="text-lg font-semibold mb-4">Your Stats</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Uploaded Songs</span>
+                                    <span class="font-semibold">12</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Total Plays</span>
+                                    <span class="font-semibold">2,456</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Followers</span>
+                                    <span class="font-semibold">89</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Following</span>
+                                    <span class="font-semibold">156</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Forms -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Personal Information -->
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-4">Personal Information</h3>
+                            <form id="personalInfoForm" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-white text-sm font-medium mb-2">First Name</label>
+                                        <input type="text" id="firstName" value="John"
+                                               class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                    </div>
+                                    <div>
+                                        <label class="block text-white text-sm font-medium mb-2">Last Name</label>
+                                        <input type="text" id="lastName" value="Doe"
+                                               class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-white text-sm font-medium mb-2">Email</label>
+                                    <input type="email" id="email" value="john@example.com"
+                                           class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                </div>
+                                <div>
+                                    <label class="block text-white text-sm font-medium mb-2">Bio</label>
+                                    <textarea id="bio" rows="3"
+                                              class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                              placeholder="Tell us about yourself..."></textarea>
+                                </div>
+                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg">
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Change Password -->
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-4">Change Password</h3>
+                            <form id="passwordForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-white text-sm font-medium mb-2">Current Password</label>
+                                    <input type="password" id="currentPassword"
+                                           class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                </div>
+                                <div>
+                                    <label class="block text-white text-sm font-medium mb-2">New Password</label>
+                                    <input type="password" id="newPassword"
+                                           class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                </div>
+                                <div>
+                                    <label class="block text-white text-sm font-medium mb-2">Confirm New Password</label>
+                                    <input type="password" id="confirmNewPassword"
+                                           class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                </div>
+                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg">
+                                    Update Password
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Privacy Settings -->
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-4">Privacy Settings</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium">Profile Visibility</h4>
+                                        <p class="text-gray-400 text-sm">Make your profile visible to other users</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium">Show Play Count</h4>
+                                        <p class="text-gray-400 text-sm">Display play counts on your songs</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium">Email Notifications</h4>
+                                        <p class="text-gray-400 text-sm">Receive email notifications for new followers</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Danger Zone -->
+                        <div class="bg-red-900/20 border border-red-500/30 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-4 text-red-400">Danger Zone</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium">Delete Account</h4>
+                                        <p class="text-gray-400 text-sm">Permanently delete your account and all data</p>
+                                    </div>
+                                    <button onclick="deleteAccount()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm">
+                                        Delete Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        if (!localStorage.getItem('userLoggedIn')) {
+            window.location.href = 'index.html';
+        }
+
+        // Load user data
+        const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+        const userName = localStorage.getItem('userName') || 'User';
+        
+        document.getElementById('displayEmail').textContent = userEmail;
+        document.getElementById('displayName').textContent = userName;
+        document.getElementById('email').value = userEmail;
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function changeAvatar() {
+            alert('Avatar change functionality would be implemented here');
+        }
+
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                localStorage.clear();
+                alert('Account deleted successfully');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Form submissions
+        document.getElementById('personalInfoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            
+            localStorage.setItem('userName', firstName + ' ' + lastName);
+            localStorage.setItem('userEmail', email);
+            
+            document.getElementById('displayName').textContent = firstName + ' ' + lastName;
+            document.getElementById('displayEmail').textContent = email;
+            
+            alert('Profile updated successfully!');
+        });
+
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+            
+            alert('Password updated successfully!');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
