@@ -6,6 +6,7 @@
 const Audio = require("../models/audio.model");
 const path = require("path");
 const fs = require("fs");
+const apiError = require("../utils/apiError");
 // async function deleteFile(path) {
 //   try {
 //     await fs.unlink(path);
@@ -17,7 +18,7 @@ const uploadAudio = async (req, res, next) => {
   const { title, genre, privacy = "public" } = req.body;
   const userId = req.user.id;
   if (!req.files.audio?.[0].filename) {
-    return next(new Error("You Must Provide Audio "));
+    return next(new apiError("You Must Provide Audio", 400));
   }
   const audioData = {
     title,
@@ -46,7 +47,7 @@ const getUserAudios = async (req, res, next) => {
   const myAudios = await Audio.find({ user: userId }).populate("user");
   console.log(myAudios);
   if (myAudios.length === 0) {
-    return next(new Error("You don't uploaded any audios"));
+    return next(new apiError("You haven't uploaded any audios", 404));
   }
   res.status(200).json({
     message: "successfully",
@@ -62,14 +63,17 @@ const deleteAudio = async (req, res, next) => {
 
     if (!audioDoc) {
       return next(
-        new Error("Audio not found or you are not the owner of this audio")
+        new apiError(
+          "Audio not found or you are not the owner of this audio",
+          404
+        )
       );
     }
 
     const deleteResult = await Audio.deleteOne({ user: userId, _id: audioId });
 
     if (deleteResult.deletedCount === 0) {
-      return next(new Error("Failed to delete audio from database"));
+      return next(new apiError("Failed to delete audio from database", 500));
     }
 
     const audioPath = path.join(
@@ -112,7 +116,7 @@ const deleteAudio = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Delete audio error:", err);
-    next(new Error("Failed to delete audio: " + err.message));
+    next(new apiError("Failed to delete audio: " + err.message, 500));
   }
 };
 const updateAudio = async (req, res, next) => {
@@ -125,11 +129,16 @@ const updateAudio = async (req, res, next) => {
     const wantedAudio = await Audio.findOne({ user: userId, _id: audioId });
     if (!wantedAudio) {
       return next(
-        new Error("Audio not found or you are not the owner of this audio")
+        new apiError(
+          "Audio not found or you are not the owner of this audio",
+          404
+        )
       );
     }
     if (userRole !== "admin" && wantedAudio.user.toString() !== userId) {
-      return next(new Error("You are Not Authorized to update This Audio"));
+      return next(
+        new apiError("You are not authorized to update this audio", 403)
+      );
     }
 
     // Update cover if provided
@@ -192,7 +201,7 @@ const streamAudio = async (req, res, next) => {
   const { audioId } = req.params;
   const audioDoc = await Audio.findById(audioId);
   if (!audioDoc) {
-    return next(new Error("Audio not found"));
+    return next(new apiError("Audio not found", 404));
   }
   // use path.resolve to get the absolute path so it not depend on the current working directory or file in which the code is running
   const audioPath = path.resolve(
@@ -206,7 +215,7 @@ const streamAudio = async (req, res, next) => {
   const audioStream = fs.createReadStream(audioPath);
   audioStream.on("error", (err) => {
     console.error("Audio stream error:", err);
-    next(new Error("Failed to stream audio"));
+    next(new apiError("Failed to stream audio", 500));
   });
   res.setHeader("Content-Type", "audio/mpeg");
 

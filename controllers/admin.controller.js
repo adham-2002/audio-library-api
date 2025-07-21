@@ -1,6 +1,7 @@
 const Audio = require("../models/audio.model");
 const path = require("path");
 const fs = require("fs").promises;
+const apiError = require("../utils/apiError");
 
 const getAllAudio = async (req, res, next) => {
   try {
@@ -24,14 +25,17 @@ const deleteAudioAdmin = async (req, res, next) => {
 
     if (!audioDoc) {
       return next(
-        new Error("Audio not found or you are not the owner of this audio")
+        new apiError(
+          "Audio not found or you are not the owner of this audio",
+          404
+        )
       );
     }
 
     const deleteResult = await Audio.deleteOne({ _id: audioId });
 
     if (deleteResult.deletedCount === 0) {
-      return next(new Error("Failed to delete audio from database"));
+      return next(new apiError("Failed to delete audio from database", 500));
     }
 
     const audioPath = path.join(
@@ -73,7 +77,7 @@ const deleteAudioAdmin = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Delete audio error:", err);
-    next(new Error("Failed to delete audio: " + err.message));
+    next(new apiError("Failed to delete audio: " + err.message, 500));
   }
 };
 

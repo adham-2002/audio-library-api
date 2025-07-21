@@ -3,29 +3,37 @@ const User = require("../models/users.model");
 const passwordValidator = require("../utils/passwordValidator");
 const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const { validationResult } = require("express-validator");
+const apiError = require("../utils/apiError");
 
 const signup = async (req, res, next) => {
   try {
     const { username, email, password, role } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json({ message: errors.array().map((err) => err.msg) });
+      return next(
+        new apiError(
+          errors
+            .array()
+            .map((err) => err.msg)
+            .join(", "),
+          400
+        )
+      );
     }
     if (!username || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "username, email and password are required" });
+      return next(
+        new apiError("username, email and password are required", 400)
+      );
     }
     const existedEmail = await User.findOne({ email });
     if (existedEmail) {
-      return res.status(409).json({ message: "Email is already existed" });
+      return next(new apiError("Email already exists", 409));
     }
     if (!passwordValidator(password)) {
-      return res.status(400).json({ message: "weak Password" });
+      return next(new apiError("Password is too weak", 400));
     }
-    // ! we can't use role in signup  we can use seeding admin because it is not secure to allow users to choose their roles
+
+    // Note: Role handling - in production, only admins should be able to create admin users
     const userRole = role === "admin" ? "admin" : "user";
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -39,27 +47,26 @@ const signup = async (req, res, next) => {
     await newUser.save();
     const accessToken = generateAccessToken(newUser);
     const refreshToken = generateRefreshToken(newUser);
-    console.log(accessToken);
+
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
+
     res.status(201).json({
       message: "Signup successful",
       user: {
         id: newUser._id,
         name: newUser.username,
         email: newUser.email,
+        role: newUser.role,
       },
       accessToken,
     });
   } catch (error) {
     next(error);
-    return res
-      .status(500)
-      .json({ message: "Server error. Please try again later." });
   }
 };
 const signin = async (req, res, next) => {
@@ -80,7 +87,7 @@ const signin = async (req, res, next) => {
     }
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
-      return res.status(400).json({ message: "Invailed Password" });
+      return next(new apiError("Invalid Password", 400));
     }
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
