@@ -1,6 +1,7 @@
 const multer = require("multer");
 const fs = require("fs").promises;
 const path = require("path");
+const apiError = require("../utils/apiError");
 // upload profile photo
 // upload cover photo + audio file
 const photoMimeTypes = [
@@ -22,7 +23,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const userId = req.user.id;
     if (!userId) {
-      return cb(new Error("User ID is required"), false);
+      return cb(new apiError("User ID is required", 401), false);
     }
     let basePath = "";
     if (file.fieldname === "profile") {
@@ -32,7 +33,7 @@ const storage = multer.diskStorage({
     } else if (file.fieldname === "audio") {
       basePath = path.join("uploads", "audios", `user_${userId}`);
     } else {
-      cb(new Error("Invalid file field"), false);
+      cb(new apiError("Invalid file field", 400), false);
     }
     fs.mkdir(basePath, { recursive: true })
       .then(() => cb(null, basePath))
@@ -50,7 +51,7 @@ const storage = multer.diskStorage({
     } else if (file.fieldname === "audio") {
       filename = `audio_${timestamp}${ext}`;
     } else {
-      return cb(new Error("Invalid file field"));
+      return cb(new apiError("Invalid file field", 400));
     }
     cb(null, filename);
   },
@@ -64,7 +65,7 @@ const fileFilter = (req, file, cb) => {
   ) {
     cb(null, true);
   } else {
-    cb(new Error("Invalid file type"), false);
+    cb(new apiError("Invalid file type", 400), false);
   }
 };
 
