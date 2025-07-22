@@ -9,6 +9,7 @@ const sendErrorForDev = (err, res) => {
     timestamp: new Date().toLocaleString(),
     path: res.req?.originalUrl,
     method: res.req?.method,
+    header: res.req?.headers,
   });
 };
 
@@ -114,6 +115,7 @@ const globalError = (err, req, res, next) => {
       body: req.body,
       params: req.params,
       query: req.query,
+      header: req.headers,
     });
   }
 

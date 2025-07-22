@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const JWT_SECRET_ACCESS = process.env.JWT_SECRET_ACCESS;
+const apiError = require("../utils/apiError");
 function authMiddleware(allowedUsers = ["user"]) {
   return function (req, res, next) {
     console.log("you are here ");
@@ -22,7 +23,9 @@ function authMiddleware(allowedUsers = ["user"]) {
       }
       next();
     } catch (err) {
-      return res.status(401).json({ message: "Invalid or expired token" });
+      return next(
+        new apiError("Invalid or expired token, please login again", 401)
+      );
     }
   };
 }
