@@ -159,17 +159,10 @@ const globalError = (err, req, res, next) => {
   }
 };
 
-// Async error wrapper to catch async errors automatically
-const asyncErrorHandler = (fn) => {
-  return (req, res, next) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-};
-
 // Handle 404 errors for undefined routes
 const handleNotFound = (req, res, next) => {
   const error = new apiError(`Route ${req.originalUrl} not found`, 404);
   next(error);
 };
 
-module.exports = { globalError, asyncErrorHandler, handleNotFound };
+module.exports = { globalError, handleNotFound };
