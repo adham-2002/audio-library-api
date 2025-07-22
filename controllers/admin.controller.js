@@ -3,20 +3,6 @@ const path = require("path");
 const fs = require("fs").promises;
 const apiError = require("../utils/apiError");
 
-const getAllAudio = async (req, res, next) => {
-  try {
-    const audio = await Audio.find({ privacy: "public" }); // you can't get private audio too
-    console.log(typeof audio);
-    res.status(200).json({
-      status: "success",
-      message: "Public audios fetched successfully",
-      data: audio,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
 const deleteAudioAdmin = async (req, res, next) => {
   const audioId = req.params.id;
 
@@ -81,4 +67,4 @@ const deleteAudioAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllAudio, deleteAudioAdmin };
+module.exports = { deleteAudioAdmin };

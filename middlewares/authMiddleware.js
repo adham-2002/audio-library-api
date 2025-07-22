@@ -3,7 +3,6 @@ const JWT_SECRET_ACCESS = process.env.JWT_SECRET_ACCESS;
 const apiError = require("../utils/apiError");
 function authMiddleware(allowedUsers = ["user"]) {
   return function (req, res, next) {
-    console.log("you are here ");
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Missing Authorization header" });

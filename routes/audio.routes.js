@@ -20,14 +20,14 @@ router.post(
   uploadAudio
 );
 
-router.get("/audio", getPublicAudios);
+router.get("/audios", getPublicAudios);
 
-router.get("/audio/mine", authMiddleware(), getUserAudios);
+router.get("/audios/me", authMiddleware(["user", "admin"]), getUserAudios);
 
-router.get("/audio/stream/:audioId", streamAudio);
+router.get("/audios/stream/:audioId", streamAudio);
 
 router.put(
-  "/audio/:audioId",
+  "/audios/:audioId",
   authMiddleware(["admin", "user"]),
   upload.fields([
     { name: "audio", maxCount: 1 },
@@ -36,6 +36,10 @@ router.put(
   updateAudio
 );
 
-router.delete("/audio/:audioId", authMiddleware(), deleteAudio);
+router.delete(
+  "/audio/:audioId",
+  authMiddleware(["user", "admin"]),
+  deleteAudio
+);
 
 module.exports = router;
