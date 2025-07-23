@@ -1,11 +1,18 @@
 const app = require("../app");
 const express = require("express");
-const { signup, signin } = require("../controllers/user.controller");
 const upload = require("../config/multer");
 const authMiddleware = require("../middlewares/authMiddleware");
 const { newAccessToken } = require("../utils/jwt");
 const { body } = require("express-validator");
-
+const {
+  signup,
+  signin,
+  profile,
+  getHistory,
+  addfavorite,
+  getFavorites,
+  removeFavorite
+} = require("../controllers/user.controller");
 const router = express.Router();
 
 router.post(
@@ -29,8 +36,11 @@ router.post(
 );
 router.post("/refresh-token", newAccessToken);
 
-router.get("/profile", authMiddleware, (req, res) => {
-  res.json({ user: req.user });
-});
+router.get("/profile", authMiddleware(["user", "admin"]),profile);
+
+router.get("/history", authMiddleware(["user", "admin"]), getHistory);
+router.get('/favorites',authMiddleware(['user','admin']),getFavorites)
+router.post("/add-favorite/:audioId", authMiddleware(["user", "admin"]), addfavorite);
+router.delete('/remove-favorite/:audioId', authMiddleware(['user', 'admin']), removeFavorite);
 
 module.exports = router;

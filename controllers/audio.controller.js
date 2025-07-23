@@ -1,4 +1,5 @@
 const Audio = require("../models/audio.model");
+const User = require("../models/users.model");
 const path = require("path");
 const fs = require("fs");
 const apiError = require("../utils/apiError");
@@ -204,11 +205,13 @@ const updateAudio = asyncErrorHandler(async (req, res, next) => {
 
 const streamAudio = asyncErrorHandler(async (req, res, next) => {
   const { audioId } = req.params;
+  const userId = req.user.id;
   const audioDoc = await Audio.findById(audioId);
   if (!audioDoc) {
     return next(new apiError("Audio not found", 404));
   }
-  const userId = req.user.id;
+
+  //add listener
   await Audio.updateOne(
     { _id: audioId, audioListeners: { $ne: userId } },
     {
@@ -216,10 +219,19 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
       $inc: { listenersCount: 1 },
     }
   );
-  const audio = await Audio.findById(audioId).select("audioListeners").lean();
-  const count = audio.audioListeners.length;
-  res.setHeader("X-Audio-Listener-Count", count);
-  console.log(count);
+  //add to history
+  await User.updateOne(
+    { _id: userId },
+    {
+      $push: {
+        history: {
+          $each: [audioId], 
+          $slice: -100, 
+        },
+      },
+    }
+  );
+
   // use path.resolve to get the absolute path so it not depend on the current working directory or file in which the code is running
   const audioPath = path.resolve(
     __dirname,
@@ -239,22 +251,38 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
   audioStream.pipe(res);
 });
 
-const getMostPopularAudios = asyncErrorHandler(async(req,res,next)=>{
-const limit = 10;
+const getMostPopularAudios = asyncErrorHandler(async (req, res, next) => {
+  const limit = 10;
 
   const audios = await Audio.find({ privacy: "public" })
     .sort({ listenersCount: -1 })
     .limit(limit)
-    .populate('user', 'username');
+    .populate("user", "username");
 
   res.status(200).json({
     status: "success",
     message: "Most popular audios fetched successfully",
     data: {
-      audios
+      audios,
     },
   });
 });
+
+const getNewRelease = asyncErrorHandler(async(req,res,next)=>{
+  const DAYS = 30;
+  const since = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000);
+
+  
+  const newReleases = await Audio.find({
+    createdAt: { $gte: since }
+  }).sort({ createdAt: -1 }); 
+
+  res.status(200).json({
+    status: "success",
+    results: newReleases.length,
+    newReleases: newReleases,
+  });
+})
 module.exports = {
   uploadAudio,
   getPublicAudios,
@@ -262,5 +290,6 @@ module.exports = {
   deleteAudio,
   updateAudio,
   streamAudio,
-  getMostPopularAudios
+  getMostPopularAudios,
+  getNewRelease
 };

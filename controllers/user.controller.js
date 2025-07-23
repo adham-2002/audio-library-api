@@ -1,11 +1,13 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/users.model");
+const Audio = require('../models/audio.model')
 const passwordValidator = require("../utils/passwordValidator");
 const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const { validationResult } = require("express-validator");
 const apiError = require("../utils/apiError");
+const asyncErrorHandler = require("../utils/asyncErrorHandler");
 
-const signup = async (req, res, next) => {
+const signup = asyncErrorHandler(async (req, res, next) => {
   try {
     const { username, email, password, role } = req.body;
     const errors = validationResult(req);
@@ -33,7 +35,6 @@ const signup = async (req, res, next) => {
       return next(new apiError("Password is too weak", 400));
     }
 
-    // Note: Role handling - in production, only admins should be able to create admin users
     const userRole = role === "admin" ? "admin" : "user";
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -68,8 +69,8 @@ const signup = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-const signin = async (req, res, next) => {
+});
+const signin = asyncErrorHandler(async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -77,13 +78,11 @@ const signin = async (req, res, next) => {
     }
     const { email, password } = req.body;
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "email and password are required" });
+      return next(new apiError("email and password are required", 400));
     }
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "User Not Found" });
+      return next(new apiError("User Not Found", 400));
     }
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
@@ -109,10 +108,91 @@ const signin = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
-    return res
-      .status(500)
-      .json({ message: "Server error. Please try again later." });
+    
   }
-};
+});
+const profile = asyncErrorHandler(async(req,res,next)=>{
+  const userId = req.user.id;
 
-module.exports = { signup, signin };
+  const existedUser = await User.findById(userId)
+  if(!existedUser){
+    return next(new apiError("User not found", 404));
+  }
+  res.json({userProfile:existedUser})
+})
+const getHistory = asyncErrorHandler(async (req, res, next) => {
+ const userId = req.user.id;
+  const user = await User.findById(userId).select("history").populate('history');
+
+
+  if (!user) {
+    return next(new apiError("User not found", 404));
+  }
+
+  const history = user.history;
+
+  res.status(200).json({
+    success: true,
+    history,
+  });
+});
+const addfavorite = asyncErrorHandler(async(req,res,next)=>{
+const { audioId } = req.params;
+const userId = req.user.id
+if (!audioId) {
+  return next(new apiError("Audio ID is required", 404));
+}
+
+const audioExists = await Audio.findById(audioId)
+if (!audioExists){
+  return next(new apiError("Audio not found", 404));
+}
+
+
+await User.updateOne({_id:userId},{$addToSet:{favorites:audioId}})
+res.status(200).json({
+    status: "success",
+    message: "Added to favorites"
+  });
+})
+const getFavorites = asyncErrorHandler(async(req,res,next)=>{
+   const userId = req.user.id;
+  const user = await User.findById(userId).select("favorites").populate('favorites');
+
+
+  if (!user) {
+    return next(new apiError("User not found", 404));
+  }
+
+  const favorites = user.favorites;
+
+  res.status(200).json({
+    success: true,
+    favorites,
+  });
+})
+const removeFavorite = asyncErrorHandler(async (req, res, next) => {
+  const { audioId } = req.params;
+  const userId = req.user.id;
+
+  if (!audioId) {
+    return next(new apiError("Audio ID is required", 400));
+  }
+
+
+  const audioExists = await Audio.findById(audioId);
+  if (!audioExists) {
+    return next(new apiError("Audio not found", 404));
+  }
+
+  await User.updateOne(
+    { _id: userId },
+    { $pull: { favorites: audioId } }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Removed from favorites"
+  });
+});
+module.exports = { signup, signin,profile, getHistory, addfavorite, getFavorites,removeFavorite };
