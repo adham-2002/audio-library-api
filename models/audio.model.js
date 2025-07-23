@@ -19,15 +19,15 @@ const audioSchema = new mongoose.Schema(
         "blues",
         "reggae",
         "metal",
-        'other'
+        "other",
       ],
-      required:true,
-      default:'other'
+      required: true,
+      default: "other",
     },
     privacy: {
       type: String,
       enum: ["private", "public"],
-      default: "public"
+      default: "public",
     },
     coverName: {
       type: String,
@@ -37,6 +37,17 @@ const audioSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    audioListeners: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    listenersCount: {
+      type: Number,
+      default: 0,
+      index: true, 
     },
     audioName: {
       type: String,

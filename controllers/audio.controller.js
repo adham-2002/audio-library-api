@@ -208,6 +208,18 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
   if (!audioDoc) {
     return next(new apiError("Audio not found", 404));
   }
+  const userId = req.user.id;
+  await Audio.updateOne(
+    { _id: audioId, audioListeners: { $ne: userId } },
+    {
+      $addToSet: { audioListeners: userId },
+      $inc: { listenersCount: 1 },
+    }
+  );
+  const audio = await Audio.findById(audioId).select("audioListeners").lean();
+  const count = audio.audioListeners.length;
+  res.setHeader("X-Audio-Listener-Count", count);
+  console.log(count);
   // use path.resolve to get the absolute path so it not depend on the current working directory or file in which the code is running
   const audioPath = path.resolve(
     __dirname,
@@ -226,6 +238,23 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
 
   audioStream.pipe(res);
 });
+
+const getMostPopularAudios = asyncErrorHandler(async(req,res,next)=>{
+const limit = 10;
+
+  const audios = await Audio.find({ privacy: "public" })
+    .sort({ listenersCount: -1 })
+    .limit(limit)
+    .populate('user', 'username');
+
+  res.status(200).json({
+    status: "success",
+    message: "Most popular audios fetched successfully",
+    data: {
+      audios
+    },
+  });
+});
 module.exports = {
   uploadAudio,
   getPublicAudios,
@@ -233,4 +262,5 @@ module.exports = {
   deleteAudio,
   updateAudio,
   streamAudio,
+  getMostPopularAudios
 };
