@@ -24,6 +24,10 @@ const audioSchema = new mongoose.Schema(
       required: true,
       default: "other",
     },
+    duration: {
+      type: Number,
+      default:0
+    },
     privacy: {
       type: String,
       enum: ["private", "public"],
@@ -47,7 +51,7 @@ const audioSchema = new mongoose.Schema(
     listenersCount: {
       type: Number,
       default: 0,
-      index: true, 
+      index: true,
     },
     audioName: {
       type: String,

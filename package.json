@@ -10,6 +10,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
     "multer": "^2.0.2",
+    "music-metadata": "^11.7.1",
     "sharp": "^0.34.3"
   },
   "name": "audio-library-api",

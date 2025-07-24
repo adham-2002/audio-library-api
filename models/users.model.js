@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema(
         ref:"Audio"
       }
     ],
+    playlist:[{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Playlist"
+    }],
     role: {
       type: String,
       enum: ["user", "admin"],
