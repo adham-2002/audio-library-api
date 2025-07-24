@@ -74,7 +74,7 @@ const logger = winston.createLogger({
 });
 
 // Add file transports for production
-if (true) {
+if (isProduction) {
   logger.add(
     new winston.transports.File({
       filename: "logs/error.log",
@@ -93,12 +93,5 @@ if (true) {
     })
   );
 }
-
-// Prevent duplicate logging of unhandled rejections
-// process.on("unhandledRejection", (reason) => {
-//   logger.error(
-//     `Unhandled Rejection: ${reason instanceof Error ? reason.stack : reason}`
-//   );
-// });
 
 module.exports = logger;

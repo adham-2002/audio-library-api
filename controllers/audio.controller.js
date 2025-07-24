@@ -284,6 +284,9 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
   }
 
 
+  // use path.resolve to get the absolute path so it not depend on the current working directory or file in which the code is running
+
+
   //add listener
   await Audio.updateOne(
     { _id: audioId, audioListeners: { $ne: userId } },
