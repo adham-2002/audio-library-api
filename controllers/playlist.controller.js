@@ -126,7 +126,7 @@ const getPublicPlaylist = asyncErrorHandler(async (req, res, next) => {
   }
   res.status(200).json({
     status: "success",
-    message: "audio added successfully to playlist",
+    message: "get public playlists successfully",
     data: {
       playlists: {
         playlists,
@@ -134,9 +134,33 @@ const getPublicPlaylist = asyncErrorHandler(async (req, res, next) => {
     },
   });
 });
+const getAllPlaylists = asyncErrorHandler(async(req,res,next)=>{
+    const userId = req.user.id
+
+    const playlists =await Playlist.find({user:userId})
+    if(!playlists){
+        return next(new apiError("playlists not found", 404));
+    }
+    
+    res.status(200).json({
+    status: "success",
+    message: "get public playlists successfully",
+    data: {
+      playlists: {
+        playlists,
+      },
+    },
+  });
+    
+})
+const removeFromPlaylist = asyncErrorHandler(async(req,res,next)=>{
+
+})
 module.exports = {
   createNewPlaylist,
   UpdatePlaylist,
   addAudioToPlaylist,
   getPublicPlaylist,
+  getAllPlaylists,
+  removeFromPlaylist
 };
