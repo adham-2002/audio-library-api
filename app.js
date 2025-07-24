@@ -12,7 +12,7 @@ const {
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("public/images"));
+app.use(express.static("public"));
 app.use("/api/v1", userRoute);
 app.use("/api/v1", audioRoute);
 app.use("/api/v1", adminRoute);

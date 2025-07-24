@@ -6,6 +6,7 @@ const apiError = require("../utils/apiError");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 const getAudioDuration = require("../utils/getAudioDuration");
 
+
 // Helper function for single file deletion
 const deleteFileIfExists = async (filePath) => {
   try {
@@ -29,7 +30,7 @@ const deleteCoverFile = async (userId, coverName) => {
   if (
     coverName !== "song_cover.png" &&
     coverName !== "public/images/song_cover.png" &&
-    coverName !== "public/images/song_cover.jpg"
+    coverName !== "images/song_cover.jpg"
   ) {
     const coverPath = path.join(
       "uploads",
@@ -56,9 +57,7 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
     return next(new apiError("You Must Provide Audio", 400));
   }
   const audioFileName = req.files.audio?.[0].filename;
-  const audioPath = path.join(
-  __dirname, "..", "uploads", "audios", `user_${userId}`, audioFileName
-  );
+  const audioPath = path.join(__dirname, "..", "uploads", "audios", `user_${userId}`, audioFileName);
   const duration = await getAudioDuration(audioPath)
   const audioData = {
     title,

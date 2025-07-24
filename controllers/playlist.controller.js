@@ -1,5 +1,6 @@
 const Playlist = require("../models/playlist.model");
 const Audio = require("../models/audio.model");
+const User = require('../models/users.model')
 const apiError = require("../utils/apiError");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 
@@ -11,7 +12,9 @@ const createNewPlaylist = asyncErrorHandler(async (req, res, next) => {
     title: title,
     user: userId,
   });
-
+  const creator = await User.findOne({_id:userId})
+  creator.playlist.push(newPlaylist._id)
+  await creator.save()
   res.status(201).json({
     status: "success",
     message: "Playlist created successfully",
@@ -25,7 +28,7 @@ const createNewPlaylist = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-const UpdatePlaylist = asyncErrorHandler(async (req, res, next) => {
+const updatePlaylist = asyncErrorHandler(async (req, res, next) => {
   //still need to update cover future
   const { title, description, privacy = "public" } = req.body;
   const userId = req.user.id;
@@ -92,14 +95,13 @@ const addAudioToPlaylist = asyncErrorHandler(async (req, res, next) => {
     return next(new apiError("Audio not found or the audio is private"), 404);
   }
 
-
   if (wantedPlaylist.audios.includes(audioId)) {
     return next(new apiError("Audio already exists in playlist", 400));
   }
-  const audioDuration = wantedAudio.duration
-  wantedPlaylist.duration +=audioDuration
- 
- 
+
+  const audioDuration = wantedAudio.duration;
+  wantedPlaylist.duration += audioDuration;
+
   wantedPlaylist.audios.push(audioId);
   await wantedPlaylist.save();
   res.status(200).json({
@@ -110,7 +112,53 @@ const addAudioToPlaylist = asyncErrorHandler(async (req, res, next) => {
         id: wantedPlaylist._id,
         title: wantedPlaylist.title,
         description: wantedPlaylist.description,
-        duration:wantedPlaylist.duration,
+        duration: wantedPlaylist.duration,
+        audios: wantedPlaylist.audios,
+        privacy: wantedPlaylist.privacy,
+        createdAt: wantedPlaylist.createdAt,
+        updatedAt: wantedPlaylist.updatedAt,
+      },
+    },
+  });
+});
+const getPlaylist = asyncErrorHandler(async (req, res, next) => {
+  const playlistId = req.params;
+  const wantedPlaylist = await Playlist.find({ _id: playlistId });
+  if (!wantedPlaylist) {
+    return next(
+      new apiError(
+        "Playlist not found or you are not the owner of this playlist",
+        404
+      )
+    );
+  }
+  const defaultCover = "images/song_cover.jpg";
+  let cover = wantedPlaylist.cover;
+
+  if (cover === defaultCover && wantedPlaylist.audios?.length) {
+
+    const audioWithCustomCover = await Audio.findOne(
+      {
+        _id: { $in: wantedPlaylist.audios },
+        cover: { $ne: defaultCover },
+      },
+      "cover"
+    ).lean();
+
+    if (audioWithCustomCover) {
+      cover = audioWithCustomCover.cover;
+    }
+  }
+  res.status(200).json({
+    status: "success",
+    message: "get playlist successfully",
+    data: {
+      playlist: {
+        id: wantedPlaylist._id,
+        title: wantedPlaylist.title,
+        description: wantedPlaylist.description,
+        duration: wantedPlaylist.duration,
+        cover: wantedPlaylist.cover,
         audios: wantedPlaylist.audios,
         privacy: wantedPlaylist.privacy,
         createdAt: wantedPlaylist.createdAt,
@@ -120,7 +168,7 @@ const addAudioToPlaylist = asyncErrorHandler(async (req, res, next) => {
   });
 });
 const getPublicPlaylist = asyncErrorHandler(async (req, res, next) => {
-  const playlists = await Playlist.find({ privacy: 'public' });
+  const playlists = await Playlist.find({ privacy: "public" });
   if (!playlists) {
     return next(new apiError("playlists not found", 404));
   }
@@ -128,39 +176,33 @@ const getPublicPlaylist = asyncErrorHandler(async (req, res, next) => {
     status: "success",
     message: "get public playlists successfully",
     data: {
-      playlists: {
-        playlists,
-      },
+      playlists,
     },
   });
 });
-const getAllPlaylists = asyncErrorHandler(async(req,res,next)=>{
-    const userId = req.user.id
+const getAllPlaylists = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user.id;
 
-    const playlists =await Playlist.find({user:userId})
-    if(!playlists){
-        return next(new apiError("playlists not found", 404));
-    }
-    
-    res.status(200).json({
+  const playlists = await Playlist.find({ user: userId });
+  if (!playlists) {
+    return next(new apiError("playlists not found", 404));
+  }
+
+  res.status(200).json({
     status: "success",
     message: "get public playlists successfully",
     data: {
-      playlists: {
-        playlists,
-      },
+      playlists,
     },
   });
-    
-})
-const removeFromPlaylist = asyncErrorHandler(async(req,res,next)=>{
-
-})
+});
+const removeFromPlaylist = asyncErrorHandler(async (req, res, next) => {});
 module.exports = {
   createNewPlaylist,
-  UpdatePlaylist,
+  updatePlaylist,
   addAudioToPlaylist,
+  getPlaylist,
   getPublicPlaylist,
   getAllPlaylists,
-  removeFromPlaylist
+  removeFromPlaylist,
 };

@@ -35,7 +35,7 @@ const audioSchema = new mongoose.Schema(
     },
     coverName: {
       type: String,
-      default: "public/images/song_cover.jpg",
+      default: "images/song_cover.jpg",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

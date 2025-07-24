@@ -10,7 +10,7 @@ const playlistSchema = new mongoose.Schema(
     },
     duration: {
       type: Number,
-      default:0
+      default: 0,
     },
     privacy: {
       type: String,
@@ -24,7 +24,7 @@ const playlistSchema = new mongoose.Schema(
     },
     cover: {
       type: String,
-      default: "public/images/song_cover.jpg",
+      default: "images/song_cover.jpg",
     },
     audios: [
       {
