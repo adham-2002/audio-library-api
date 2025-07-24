@@ -19,12 +19,23 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: "public/images/default-profile.jpg",
     },
+    history: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Audio",
+      },
+    ],
+    favorites:[
+      {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Audio"
+      }
+    ],
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
-    }
-
+    },
   },
   { timestamps: true }
 );
