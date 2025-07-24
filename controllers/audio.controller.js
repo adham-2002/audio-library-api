@@ -279,6 +279,7 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
     return next(new apiError("Audio not found", 404));
   }
 
+  // use path.resolve to get the absolute path so it not depend on the current working directory or file in which the code is running
   const audioPath = path.resolve(
     __dirname,
     "..",
