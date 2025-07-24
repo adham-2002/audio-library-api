@@ -1,5 +1,5 @@
 const Playlist = require("../models/playlist.model");
-const Audio = require("../models/audio.model")
+const Audio = require("../models/audio.model");
 const apiError = require("../utils/apiError");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 
@@ -69,13 +69,16 @@ const UpdatePlaylist = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-const addAudioToPlaylist = asyncErrorHandler(async (req, res, next) =>{
-const {playlistId} =req.params;
-const {audioId} = req.body;
-const userId = req.user.id;
+const addAudioToPlaylist = asyncErrorHandler(async (req, res, next) => {
+  const { playlistId } = req.params;
+  const { audioId } = req.body;
+  const userId = req.user.id;
 
-const wantedPlaylist = await Playlist.findOne({_id:playlistId,user:userId})
-if (!wantedPlaylist) {
+  const wantedPlaylist = await Playlist.findOne({
+    _id: playlistId,
+    user: userId,
+  });
+  if (!wantedPlaylist) {
     return next(
       new apiError(
         "Playlist not found or you are not the owner of this playlist",
@@ -84,16 +87,21 @@ if (!wantedPlaylist) {
     );
   }
 
-  const wantedAudio = await Audio.findOne({_id:audioId,privacy:"public"})
-  if(!wantedAudio){
-    return next(new apiError("Audio not found or the audio is private"),404)
+  const wantedAudio = await Audio.findOne({ _id: audioId, privacy: "public" });
+  if (!wantedAudio) {
+    return next(new apiError("Audio not found or the audio is private"), 404);
   }
 
-   if (wantedPlaylist.audios.includes(audioId)) {
+
+  if (wantedPlaylist.audios.includes(audioId)) {
     return next(new apiError("Audio already exists in playlist", 400));
   }
-  wantedPlaylist.audios.push(audioId)
-  await wantedPlaylist.save()
+  const audioDuration = wantedAudio.duration
+  wantedPlaylist.duration +=audioDuration
+ 
+ 
+  wantedPlaylist.audios.push(audioId);
+  await wantedPlaylist.save();
   res.status(200).json({
     status: "success",
     message: "audio added successfully to playlist",
@@ -102,7 +110,8 @@ if (!wantedPlaylist) {
         id: wantedPlaylist._id,
         title: wantedPlaylist.title,
         description: wantedPlaylist.description,
-        audios:wantedPlaylist.audios,
+        duration:wantedPlaylist.duration,
+        audios: wantedPlaylist.audios,
         privacy: wantedPlaylist.privacy,
         createdAt: wantedPlaylist.createdAt,
         updatedAt: wantedPlaylist.updatedAt,
@@ -110,4 +119,24 @@ if (!wantedPlaylist) {
     },
   });
 });
-module.exports = { createNewPlaylist,UpdatePlaylist , addAudioToPlaylist };
+const getPublicPlaylist = asyncErrorHandler(async (req, res, next) => {
+  const playlists = await Playlist.find({ privacy: 'public' });
+  if (!playlists) {
+    return next(new apiError("playlists not found", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    message: "audio added successfully to playlist",
+    data: {
+      playlists: {
+        playlists,
+      },
+    },
+  });
+});
+module.exports = {
+  createNewPlaylist,
+  UpdatePlaylist,
+  addAudioToPlaylist,
+  getPublicPlaylist,
+};
