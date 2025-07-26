@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/users.model");
-const Audio = require('../models/audio.model')
+const Audio = require("../models/audio.model");
 const passwordValidator = require("../utils/passwordValidator");
 const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const { validationResult } = require("express-validator");
@@ -8,7 +8,6 @@ const apiError = require("../utils/apiError");
 const logger = require("../utils/logger");
 
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
-
 
 const signup = asyncErrorHandler(async (req, res, next) => {
   try {
@@ -114,7 +113,6 @@ const signin = asyncErrorHandler(async (req, res, next) => {
     }
 
     if (!email || !password) {
-
       logger.warn(`Signin failed - missing required fields`, { email });
       return res
         .status(400)
@@ -126,11 +124,6 @@ const signin = asyncErrorHandler(async (req, res, next) => {
       return res.status(400).json({ message: "User Not Found" });
 
       return next(new apiError("email and password are required", 400));
-    }
-    const user = await User.findOne({ email });
-    if (!user) {
-      return next(new apiError("User Not Found", 400));
-
     }
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
@@ -173,22 +166,22 @@ const signin = asyncErrorHandler(async (req, res, next) => {
       stack: error.stack,
     });
     next(error);
-
   }
 });
-const profile = asyncErrorHandler(async(req,res,next)=>{
+const profile = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user.id;
 
-  const existedUser = await User.findById(userId)
-  if(!existedUser){
+  const existedUser = await User.findById(userId);
+  if (!existedUser) {
     return next(new apiError("User not found", 404));
   }
-  res.json({userProfile:existedUser})
-})
+  res.json({ userProfile: existedUser });
+});
 const getHistory = asyncErrorHandler(async (req, res, next) => {
- const userId = req.user.id;
-  const user = await User.findById(userId).select("history").populate('history');
-
+  const userId = req.user.id;
+  const user = await User.findById(userId)
+    .select("history")
+    .populate("history");
 
   if (!user) {
     return next(new apiError("User not found", 404));
@@ -201,29 +194,29 @@ const getHistory = asyncErrorHandler(async (req, res, next) => {
     history,
   });
 });
-const addfavorite = asyncErrorHandler(async(req,res,next)=>{
-const { audioId } = req.params;
-const userId = req.user.id
-if (!audioId) {
-  return next(new apiError("Audio ID is required", 404));
-}
+const addfavorite = asyncErrorHandler(async (req, res, next) => {
+  const { audioId } = req.params;
+  const userId = req.user.id;
+  if (!audioId) {
+    return next(new apiError("Audio ID is required", 404));
+  }
 
-const audioExists = await Audio.findById(audioId)
-if (!audioExists){
-  return next(new apiError("Audio not found", 404));
-}
+  const audioExists = await Audio.findById(audioId);
+  if (!audioExists) {
+    return next(new apiError("Audio not found", 404));
+  }
 
-
-await User.updateOne({_id:userId},{$addToSet:{favorites:audioId}})
-res.status(200).json({
+  await User.updateOne({ _id: userId }, { $addToSet: { favorites: audioId } });
+  res.status(200).json({
     status: "success",
-    message: "Added to favorites"
+    message: "Added to favorites",
   });
-})
-const getFavorites = asyncErrorHandler(async(req,res,next)=>{
-   const userId = req.user.id;
-  const user = await User.findById(userId).select("favorites").populate('favorites');
-
+});
+const getFavorites = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user.id;
+  const user = await User.findById(userId)
+    .select("favorites")
+    .populate("favorites");
 
   if (!user) {
     return next(new apiError("User not found", 404));
@@ -235,7 +228,7 @@ const getFavorites = asyncErrorHandler(async(req,res,next)=>{
     success: true,
     favorites,
   });
-})
+});
 const removeFavorite = asyncErrorHandler(async (req, res, next) => {
   const { audioId } = req.params;
   const userId = req.user.id;
@@ -244,20 +237,24 @@ const removeFavorite = asyncErrorHandler(async (req, res, next) => {
     return next(new apiError("Audio ID is required", 400));
   }
 
-
   const audioExists = await Audio.findById(audioId);
   if (!audioExists) {
     return next(new apiError("Audio not found", 404));
   }
 
-  await User.updateOne(
-    { _id: userId },
-    { $pull: { favorites: audioId } }
-  );
+  await User.updateOne({ _id: userId }, { $pull: { favorites: audioId } });
 
   res.status(200).json({
     status: "success",
-    message: "Removed from favorites"
+    message: "Removed from favorites",
   });
 });
-module.exports = { signup, signin,profile, getHistory, addfavorite, getFavorites,removeFavorite };
+module.exports = {
+  signup,
+  signin,
+  profile,
+  getHistory,
+  addfavorite,
+  getFavorites,
+  removeFavorite,
+};
