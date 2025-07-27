@@ -3,6 +3,7 @@ const Audio = require("../models/audio.model");
 const User = require('../models/users.model')
 const apiError = require("../utils/apiError");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
+const crypto = require('crypto')
 
 const createNewPlaylist = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user.id;
@@ -263,6 +264,51 @@ const deletePlaylist = asyncErrorHandler(async (req, res, next) => {
     message: "Playlist deleted successfully",
   });
 });
+const sharePlaylist = asyncErrorHandler(async(req,res,next)=>{
+  const {playlistId} =req.params;
+
+  const playlist = await Playlist.findOne({_id:playlistId ,privacy:"public"})
+  if(!playlist){
+    return next(new apiError("Playlist not found or its private",404))
+  }
+  if(!playlist.shareToken){
+    playlist.shareToken = crypto.randomBytes(16).toString("hex")
+    await playlist.save()
+  }
+   const shareUrl = `${process.env.CLIENT_URL}/shared-playlist/${playlist.shareToken}`;
+    res.status(200).json({
+    status: "success",
+    message: "Playlist share link generated",
+    data: {
+      shareUrl,
+    },
+  });
+
+})
+const getSharedPlaylist = asyncErrorHandler(async(req,res,next)=>{
+  const {token} = req.params
+
+    const playlist = await Playlist.findOne({ shareToken: token }).populate("audios");
+  if(!playlist){
+    return next(new apiError("Shared playlist not found",404))
+  }
+
+   res.status(200).json({
+    status: "success",
+    message: "Shared playlist fetched",
+    data: {
+      playlist: {
+        id: playlist._id,
+        title: playlist.title,
+        description: playlist.description,
+        audios: playlist.audios,
+        duration: playlist.duration,
+        createdAt: playlist.createdAt,
+        updatedAt: playlist.updatedAt,
+      },
+    },
+  });
+})
 module.exports = {
   createNewPlaylist,
   updatePlaylist,
@@ -271,5 +317,7 @@ module.exports = {
   getPublicPlaylist,
   getAllPlaylists,
   removeFromPlaylist,
-  deletePlaylist
+  deletePlaylist,
+  sharePlaylist,
+  getSharedPlaylist
 };

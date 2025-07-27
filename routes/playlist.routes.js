@@ -8,7 +8,9 @@ const {
   getPublicPlaylist,
   getAllPlaylists,
   removeFromPlaylist,
-  deletePlaylist
+  deletePlaylist,
+  sharePlaylist,
+  getSharedPlaylist
 } = require("../controllers/playlist.controller");
 
 const router = express.Router();
@@ -33,6 +35,8 @@ router.delete(
   authMiddleware(["user", "admin"]),
   removeFromPlaylist
 );
-
 router.delete("/playlists/:playlistId",authMiddleware(["user","admin"]),deletePlaylist)
+
+router.post('/playlists/:playlistId/share',authMiddleware(["user","admin"]),sharePlaylist)
+router.get('/playlists/shared/:token',authMiddleware(["user","admin"]),getSharedPlaylist)
 module.exports = router;

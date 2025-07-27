@@ -32,6 +32,8 @@ const playlistSchema = new mongoose.Schema(
         ref: "Audio",
       },
     ],
+    shareToken: { type: String, default: null }
+
   },
   { timestamps: true }
 );
