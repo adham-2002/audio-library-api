@@ -8,29 +8,31 @@ const {
   getPublicPlaylist,
   getAllPlaylists,
   removeFromPlaylist,
+  deletePlaylist
 } = require("../controllers/playlist.controller");
 
 const router = express.Router();
 
 router.get("/playlists", authMiddleware(["user", "admin"]), getPublicPlaylist);
-router.get("/playlist/:playlistId", authMiddleware(["user", "admin"]), getPlaylist);
-router.get("/playlist/:playlistId/mine", authMiddleware(["user", "admin"]), getPlaylist);
+router.get("/playlists/:playlistId", authMiddleware(["user", "admin"]), getPlaylist);
+router.get("/playlists/:playlistId/mine", authMiddleware(["user", "admin"]), getPlaylist);
 router.get("/playlists/mine",authMiddleware(["user", "admin"]), getAllPlaylists)
-router.post("/playlist", authMiddleware(["user", "admin"]), createNewPlaylist);
+router.post("/playlists", authMiddleware(["user", "admin"]), createNewPlaylist);
 router.put(
-  "/playlist/:playlistId",
+  "/playlists/:playlistId",
   authMiddleware(["user", "admin"]),
   updatePlaylist
 );
 router.patch(
-  "/playlist/:playlistId",
+  "/playlists/:playlistId",
   authMiddleware(["user", "admin"]),
   addAudioToPlaylist
 );
 router.delete(
-  "/playlist/:playlistId",
+  "/playlists/:playlistId/audios/:audioId",
   authMiddleware(["user", "admin"]),
   removeFromPlaylist
 );
 
+router.delete("/playlists/:playlistId",authMiddleware(["user","admin"]),deletePlaylist)
 module.exports = router;
