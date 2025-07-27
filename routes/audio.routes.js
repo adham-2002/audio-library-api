@@ -10,7 +10,7 @@ const {
   streamAudio,
   updateAudio,
   getMostPopularAudios,
-  getNewRelease
+  getNewRelease,
 } = require("../controllers/audio.controller");
 router.post(
   "/audio",
@@ -26,17 +26,24 @@ router.get("/audios", getPublicAudios);
 
 router.get("/audios/me", authMiddleware(["user", "admin"]), getUserAudios);
 
-
 router.get(
   "/audios/stream/:audioId",
   authMiddleware(["user", "admin"]),
   streamAudio
 );
-router.get("/audios/stream/:audioId", authMiddleware(["user","admin"]),streamAudio);
+router.get(
+  "/audios/stream/:audioId",
+  authMiddleware(["user", "admin"]),
+  streamAudio
+);
 
-router.get("/audios/popular",authMiddleware(["user", "admin"]), getMostPopularAudios);
+router.get(
+  "/audios/popular",
+  authMiddleware(["user", "admin"]),
+  getMostPopularAudios
+);
 
-router.get('/audio/new-releases', getNewRelease);
+router.get("/audio/new-releases", getNewRelease);
 
 router.put(
   "/audios/:audioId",

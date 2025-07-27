@@ -9,7 +9,7 @@ const connectDB = async () => {
     logger.info("DB connected successfully");
   } catch (err) {
     logger.error(`DB connection error: ${err}`);
-    throw err; // مهم علشان نوقف السيرفر لو حصلت مشكلة
+    throw err;
   }
 };
 

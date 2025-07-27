@@ -3,6 +3,7 @@ const User = require("../models/users.model");
 const Token = require("../models/token.model");
 const { v4: uuidv4 } = require("uuid");
 const { getRedisClient } = require("../config/redisConnect");
+const logger = require("../utils/logger");
 const JWT_SECRET_REFRESH = process.env.JWT_SECRET_REFRESH;
 const JWT_SECRET_ACCESS = process.env.JWT_SECRET_ACCESS;
 
@@ -18,17 +19,52 @@ async function generateRefreshToken(user) {
     expiresIn: "7d",
   });
   const expiredAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-  //1) save in mongoDb
-  await Token.create({ userId: user._id, refreshToken, sessionId, expiredAt });
-  //2) save in redis
-  const redisClient = getRedisClient();
-  await redisClient.set(
-    refreshToken,
-    JSON.stringify({ userId: user._id, sessionId }),
-    {
-      EX: 7 * 24 * 60 * 60, // 7 days
+
+  try {
+    // Save in MongoDB first (fallback storage)
+    await Token.create({
+      userId: user._id,
+      refreshToken,
+      sessionId,
+      expiredAt,
+    });
+
+    // Save in Redis using Set + individual session keys
+    const redisClient = getRedisClient();
+    const setKey = `user_session_list:${user._id}`;
+    const sessionKey = `session:${user._id}:${sessionId}`;
+
+    // Add sessionId to user's set
+    try {
+      await redisClient.sAdd(setKey, sessionId);
+      await redisClient.expire(setKey, 7 * 24 * 60 * 60);
+    } catch (setError) {
+      logger.error("Redis set operations failed", { error: setError.message });
     }
-  );
+
+    // Save session data in individual key
+    const sessionData = {
+      refreshToken,
+      sessionId: sessionId,
+      createdAt: new Date().toISOString(),
+      userRole: user.role,
+    };
+    try {
+      await redisClient.set(sessionKey, JSON.stringify(sessionData), {
+        EX: 7 * 24 * 60 * 60, // 7 days
+      });
+    } catch (sessionError) {
+      logger.error("Redis session save failed", {
+        error: sessionError.message,
+      });
+    }
+  } catch (error) {
+    logger.error("Redis operation failed during token generation", {
+      userId: user._id,
+      error: error.message,
+    });
+  }
+
   return { refreshToken, sessionId };
 }
 function generateAccessToken(user) {
@@ -37,24 +73,7 @@ function generateAccessToken(user) {
     role: user.role,
   };
 
-  return jwt.sign(payload, JWT_SECRET_ACCESS, { expiresIn: "30d" });
+  return jwt.sign(payload, JWT_SECRET_ACCESS, { expiresIn: "5m" });
 }
 
-async function newAccessToken(req, res) {
-  const token = req.cookies.refresh_token;
-  if (!token) {
-    return res.status(401).json({ message: "No refresh token" });
-  }
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET_REFRESH);
-    const user = await User.findById(decoded.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    const newAccessToken = generateAccessToken(user);
-    console.log(newAccessToken);
-    res.json({ accessToken: newAccessToken });
-  } catch {
-    res.status(403).json({ message: "Invalid refresh token" });
-  }
-}
-
-module.exports = { generateRefreshToken, generateAccessToken, newAccessToken };
+module.exports = { generateRefreshToken, generateAccessToken };

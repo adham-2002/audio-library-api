@@ -1,11 +1,17 @@
-const app = require("./app");
-const connectDB = require("./config/db");
 const logger = require("./utils/logger");
-const { connectRedis } = require("./config/redisConnect");
 process.on("uncaughtException", (err) => {
   logger.error(`Uncaught Exception: ${err.stack}`);
   process.exit(1);
 });
+process.on("unhandledRejection", (reason) => {
+  logger.error(
+    `Unhandled Rejection: ${reason instanceof Error ? reason.stack : reason}`
+  );
+  process.exit(1);
+});
+const app = require("./app");
+const connectDB = require("./config/db");
+const { connectRedis } = require("./config/redisConnect");
 (async () => {
   try {
     await connectDB();
@@ -17,12 +23,6 @@ process.on("uncaughtException", (err) => {
     });
   } catch (err) {
     logger.error("Failed to start the server", err);
-    process.exit(1); // Exit if DB or Redis fails
+    process.exit(1);
   }
 })();
-process.on("unhandledRejection", (reason) => {
-  logger.error(
-    `Unhandled Rejection: ${reason instanceof Error ? reason.stack : reason}`
-  );
-  process.exit(1);
-});
