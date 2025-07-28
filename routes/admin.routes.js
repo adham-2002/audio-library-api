@@ -1,8 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/authMiddleware");
-const { deleteAudioAdmin } = require("../controllers/admin.controller");
+const { getAllAudios } = require("../controllers/admin.controller");
 const router = express.Router();
 
-router.delete("/admin/audios/:id", authMiddleware("admin"), deleteAudioAdmin);
-
+router.get("/admin/audios", authMiddleware("admin"), getAllAudios);
 module.exports = router;

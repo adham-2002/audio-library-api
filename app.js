@@ -4,7 +4,11 @@ const cookieParser = require("cookie-parser");
 const userRoute = require("./routes/user.routes");
 const audioRoute = require("./routes/audio.routes");
 const adminRoute = require("./routes/admin.routes");
+
 const playlistRoute = require('./routes/playlist.routes')
+
+const morganMiddleware = require("./middlewares/morganLogger");
+
 const {
   globalError,
   handleNotFound,
@@ -13,6 +17,9 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static("public"));
+
+app.use(morganMiddleware);
+
 app.use("/api/v1", userRoute);
 app.use("/api/v1", audioRoute);
 app.use("/api/v1", adminRoute);

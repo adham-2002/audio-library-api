@@ -10,9 +10,15 @@
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
+    "morgan": "^1.10.1",
     "multer": "^2.0.2",
+
     "music-metadata": "^11.7.1",
     "sharp": "^0.34.3"
+
+    "sharp": "^0.34.3",
+    "winston": "^3.17.0"
+
   },
   "name": "audio-library-api",
   "version": "1.0.0",
@@ -23,7 +29,8 @@
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "prod": "cross-env NODE_ENV=production node server.js"
+    "prod": "cross-env NODE_ENV=production node server.js",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "keywords": [],
   "author": "",
