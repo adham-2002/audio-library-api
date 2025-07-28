@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
     profilePic: {
       type: String,
       required: true,
-      default: "public/images/default-profile.jpg",
+      default: "images/default-profile.jpg",
     },
     history: [
       {
@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema(
         ref:"Audio"
       }
     ],
+    playlist:[{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Playlist"
+    }],
     role: {
       type: String,
       enum: ["user", "admin"],
