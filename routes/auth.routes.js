@@ -4,10 +4,7 @@ const {
   signup,
   signin,
   newAccessToken,
-  logout,
-  logoutAll,
 } = require("../controllers/auth.Controller");
-const authMiddleware = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 router.post(
@@ -30,7 +27,4 @@ router.post(
   signin
 );
 router.post("/refresh-token", newAccessToken);
-router.post("/logout", authMiddleware(["user", "admin"]), logout);
-router.post("/logout-all", authMiddleware(["user", "admin"]), logoutAll);
-
 module.exports = router;

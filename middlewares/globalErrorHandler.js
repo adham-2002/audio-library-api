@@ -112,7 +112,6 @@ const globalError = (err, req, res, next) => {
     statusCode: err.statusCode,
     path: req.originalUrl,
     method: req.method,
-    userAgent: req.get("User-Agent"),
     ip: req.ip || req.connection.remoteAddress,
     userId: req.user?.id || "anonymous",
     timestamp: new Date().toISOString(),

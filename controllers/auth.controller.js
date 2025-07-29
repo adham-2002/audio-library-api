@@ -75,8 +75,8 @@ const signup = asyncErrorHandler(async (req, res, next) => {
       role: newUser.role,
     });
 
-    const accessToken = generateAccessToken(newUser);
     const { refreshToken, sessionId } = await generateRefreshToken(newUser);
+    const accessToken = generateAccessToken(newUser, sessionId);
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
@@ -102,7 +102,6 @@ const signup = asyncErrorHandler(async (req, res, next) => {
 const signin = asyncErrorHandler(async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     logger.info(`User signin attempt`, { email });
 
     const errors = validationResult(req);
@@ -134,8 +133,8 @@ const signin = asyncErrorHandler(async (req, res, next) => {
       return next(new apiError("Invalid Password", 400));
     }
 
-    const accessToken = generateAccessToken(user);
     const { refreshToken, sessionId } = await generateRefreshToken(user);
+    const accessToken = generateAccessToken(user, sessionId);
 
     logger.info(`User signed in successfully`, {
       userId: user._id,
@@ -231,94 +230,17 @@ const newAccessToken = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById(decoded.id);
   if (!user) return next(new apiError("User not found", 404));
 
-  const newAccessToken = generateAccessToken(user);
+  const newAccessToken = generateAccessToken(user, decoded.sessionId);
 
   logger.info("Access token refreshed successfully", { userId: user._id });
 
-  res.json({ accessToken: newAccessToken });
-});
-const logout = asyncErrorHandler(async (req, res, next) => {
-  const token = req.cookies.refresh_token;
-  if (!token) {
-    return next(new apiError("No refresh token provided", 401));
-  }
-  // Decode token to get session info
-  const decoded = jwt.verify(token, JWT_SECRET_REFRESH);
-  const redisClient = getRedisClient();
-  // Remove from Redis
-  const sessionKey = `session:${decoded.id}:${decoded.sessionId}`;
-  const setKey = `user_session_list:${decoded.id}`;
-  await redisClient.del(sessionKey);
-  await redisClient.sRem(setKey, decoded.sessionId);
-  // Remove from MongoDB
-  await Token.deleteOne({
-    refreshToken: token,
-    userId: decoded.id,
-    sessionId: decoded.sessionId,
-  });
-  // res.clearCookie("refresh_token");
-  logger.info("User logged out successfully", {
-    userId: decoded.id,
-    sessionId: decoded.sessionId,
-  });
   res.status(200).json({
-    status: "success",
-    message: "Logged out successfully",
+    accessToken: newAccessToken,
   });
 });
-const logoutAll = asyncErrorHandler(async (req, res, next) => {
-  const token = req.cookies.refresh_token;
-  if (!token) {
-    return next(new apiError("No refresh token provided", 401));
-  }
-  const decoded = jwt.verify(token, JWT_SECRET_REFRESH);
-  const userId = decoded.id;
 
-  // Remove all tokens from MongoDB
-  const deletedCount = await Token.deleteMany({ userId });
-
-  // Remove all sessions from Redis
-  const redisClient = getRedisClient();
-  const setKey = `user_session_list:${userId}`;
-
-  // Get session IDs from set for counting
-  const sessionIds = await redisClient.sMembers(setKey);
-
-  // Search for ALL session keys using pattern to ensure complete cleanup
-  const pattern = `session:${userId}:*`;
-  const allSessionKeys = await redisClient.keys(pattern);
-
-  // Delete ALL session keys found
-  let totalDeleted = 0;
-  if (allSessionKeys.length > 0) {
-    // Delete keys individually to ensure all are deleted
-    for (const key of allSessionKeys) {
-      const deleteResult = await redisClient.del(key);
-      totalDeleted += deleteResult;
-    }
-  }
-
-  // Delete the set
-  await redisClient.del(setKey);
-
-  res.clearCookie("refresh_token");
-
-  logger.info("User logged out from all devices", {
-    userId,
-    sessionsRevoked: totalDeleted,
-    mongoTokensDeleted: deletedCount.deletedCount,
-  });
-
-  res.status(200).json({
-    status: "success",
-    message: "Logged out from all devices",
-    sessionsRevoked: totalDeleted,
-  });
-});
 module.exports = {
   signup,
   signin,
   newAccessToken,
-  logout,
-  logoutAll,
 };

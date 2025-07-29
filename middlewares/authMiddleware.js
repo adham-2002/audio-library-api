@@ -9,9 +9,15 @@ function authMiddleware(allowedUsers = ["user"]) {
     }
 
     const [scheme, token] = authHeader.split(" ");
-    if (scheme !== "Bearer" || !token) {
+    if (
+      scheme !== "Bearer" ||
+      !token ||
+      token === "null" ||
+      token === "undefined"
+    ) {
       return res.status(401).json({ message: "Invalid Authorization format" });
     }
+
     try {
       const decoded = jwt.verify(token, JWT_SECRET_ACCESS);
       req.user = decoded;
