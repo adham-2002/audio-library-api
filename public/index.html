@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Library API</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        backdrop-filter: blur(10px);
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        color: white;
+      }
+
+      .btn-primary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(45deg, #4ecdc4, #44a08d);
+      }
+
+      .btn-tertiary {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .feature {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .feature h3 {
+        margin-bottom: 0.5rem;
+        color: #4ecdc4;
+      }
+
+      .status {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(76, 175, 80, 0.2);
+        border-radius: 20px;
+        color: #4caf50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .buttons {
+          flex-direction: column;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="status">🟢 API Online</div>
+      <h1>🎵 Audio Library API</h1>
+      <p class="subtitle">
+        A comprehensive REST API for managing audio files with Redis-based
+        session management
+      </p>
+
+      <div class="buttons">
+        <a href="/api-docs" class="btn btn-primary">📖 API Documentation</a>
+        <a href="/auth-guide.html" class="btn btn-secondary">🔐 Auth Guide</a>
+        <a href="/health" class="btn btn-secondary">🏥 Health Check</a>
+        <a
+          href="https://github.com/adham-2002/audio-library-api"
+          class="btn btn-tertiary"
+          >🔗 GitHub</a
+        >
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <h3>🔐 Authentication</h3>
+          <p>
+            JWT-based auth with role-based access control and Redis session
+            management
+          </p>
+        </div>
+        <div class="feature">
+          <h3>🎧 Audio Management</h3>
+          <p>
+            Upload, stream, and manage audio files with metadata and cover
+            images
+          </p>
+        </div>
+        <div class="feature">
+          <h3>📊 Analytics</h3>
+          <p>Track listening history, favorites, and popular content</p>
+        </div>
+        <div class="feature">
+          <h3>🛡️ Security</h3>
+          <p>
+            Input validation, file security, and comprehensive error handling
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1230 @@
+{
+	"info": {
+		"_postman_id": "1c62167c-eb4e-4556-b9db-3f666e68f754",
+		"name": "Music Player api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38047728",
+		"_collection_link": "https://crimson-escape-22679-1-0221.postman.co/workspace/Public-Project~75a5f84c-b41b-4e0c-b55d-5d5f33599b09/collection/38047728-1c62167c-eb4e-4556-b9db-3f666e68f754?action=share&source=collection_link&creator=38047728"
+	},
+	"item": [
+		{
+			"name": "authentication",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"// save the accessToken to an environment variable\r",
+									"pm.environment.set(\"accessToken\", jsonData.accessToken);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"username\":\"adham2002\", \r\n//     \"email\":\"adham51732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"username\":\"adham2002\", \r\n    \"email\":\"adh11112am@gmail.com\",\r\n    \"password\":\"Adham@2002\",\r\n    \"role\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/signup",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/refresh-token",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sessions",
+			"item": [
+				{
+					"name": "Get Logged User sessions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/sessions/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"sessions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/sessions/logout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"sessions",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"// save the accessToken to an environment variable\r",
+									"pm.environment.set(\"accessToken\", jsonData.accessToken);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/sessions/logout-all",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"sessions",
+								"logout-all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Specific session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/sessions/:sessionId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"sessions",
+								":sessionId"
+							],
+							"variable": [
+								{
+									"key": "sessionId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "audio",
+			"item": [
+				{
+					"name": "create Audio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/test.mp3"
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/Screenshot 2025-06-17 143921.png"
+								},
+								{
+									"key": "title",
+									"value": "second song but private",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "private",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/audio",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all Audios (Public Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2QxOGI3M2I0ZjliOTM3MTU3MDI1YiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzE3MDQ4NywiZXhwIjoxNzU1NzYyNDg3fQ.sZtDVUDpAQf-TlwexglVogsz4TnYvjyanfS39ty9Z_M",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/audios/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audios",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get my audios(private Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/audios/me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audios",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Audio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2QxOGI3M2I0ZjliOTM3MTU3MDI1YiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzE5NjEwOSwiZXhwIjoxNzU1Nzg4MTA5fQ.foUnpa5Dn8suPcwMmjHpvLmB52qb-XkiXCTI6cvmNJU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/tumblr_e8bf9899b6ece03a085882e5bd0164b5_c9b1dc20_1280.png",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "yessssssssssssssssssssss",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "public",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/audios/687fa5ccf98532f7da9c5a32",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audios",
+								"687fa5ccf98532f7da9c5a32"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stream audio",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{URL}}/audios/stream/6881db3455da06a7ff929193",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audios",
+								"stream",
+								"6881db3455da06a7ff929193"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Audio FIle",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/audio/687fa5b6f98532f7da9c5a2e",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audio",
+								"687fa5b6f98532f7da9c5a2e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get new release",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}//audio/new-releases",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"",
+								"audio",
+								"new-releases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get popular audio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/audios/popular",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audios",
+								"popular"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "get all Audios private & Public",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/admin/audios/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"admin",
+								"audios",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "playlist",
+			"item": [
+				{
+					"name": "create playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/playlists",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\":\"اي حاجة3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/playlists/688392eb30b3efa953e6bd03",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists",
+								"688392eb30b3efa953e6bd03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add audio to playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"audioId\":\"6881db3455da06a7ff929193\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/playlists/688392eb30b3efa953e6bd03",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists",
+								"688392eb30b3efa953e6bd03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all playlists {Public Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/playlists",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get my playlists",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/test.mp3"
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/Screenshot 2025-06-17 143921.png"
+								},
+								{
+									"key": "title",
+									"value": "second song but private",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "private",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/playlists/mine",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists",
+								"mine"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Audio from Playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2QxOGI3M2I0ZjliOTM3MTU3MDI1YiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzE5NjEwOSwiZXhwIjoxNzU1Nzg4MTA5fQ.foUnpa5Dn8suPcwMmjHpvLmB52qb-XkiXCTI6cvmNJU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/tumblr_e8bf9899b6ece03a085882e5bd0164b5_c9b1dc20_1280.png",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "yessssssssssssssssssssss",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "public",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/playlists/688392eb30b3efa953e6bd03/audios/6881db3455da06a7ff929193",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists",
+								"688392eb30b3efa953e6bd03",
+								"audios",
+								"6881db3455da06a7ff929193"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Playlist",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Share Public Playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2QxOGI3M2I0ZjliOTM3MTU3MDI1YiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzE5NjEwOSwiZXhwIjoxNzU1Nzg4MTA5fQ.foUnpa5Dn8suPcwMmjHpvLmB52qb-XkiXCTI6cvmNJU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/tumblr_e8bf9899b6ece03a085882e5bd0164b5_c9b1dc20_1280.png",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "yessssssssssssssssssssss",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "public",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/playlists/68823352064108d3d144d383/share",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists",
+								"68823352064108d3d144d383",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Shared Playlist",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2QxOGI3M2I0ZjliOTM3MTU3MDI1YiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzE5NjEwOSwiZXhwIjoxNzU1Nzg4MTA5fQ.foUnpa5Dn8suPcwMmjHpvLmB52qb-XkiXCTI6cvmNJU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/tumblr_e8bf9899b6ece03a085882e5bd0164b5_c9b1dc20_1280.png",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "yessssssssssssssssssssss",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "public",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/playlists/shared/f2b069091c772fe5da44f3f6ebfef2e4",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists",
+								"shared",
+								"f2b069091c772fe5da44f3f6ebfef2e4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/test.mp3"
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/C:/Users/adham/Desktop/Screenshot 2025-06-17 143921.png"
+								},
+								{
+									"key": "title",
+									"value": "second song but private",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "private",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/profile",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add audio to favorite",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/add-favorite/6881db3e55da06a7ff929195",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"add-favorite",
+								"6881db3e55da06a7ff929195"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get favorites",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/favorites",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete from favorite",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/remove-favorite/6881db3e55da06a7ff929195",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"remove-favorite",
+								"6881db3e55da06a7ff929195"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get history",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/history",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"history"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

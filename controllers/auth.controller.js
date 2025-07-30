@@ -7,7 +7,6 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const logger = require("../utils/logger");
 const { getRedisClient } = require("../config/redisConnect");
-const { json } = require("express");
 const jwt = require("jsonwebtoken");
 const Token = require("../models/token.model");
 const JWT_SECRET_REFRESH = process.env.JWT_SECRET_REFRESH;
@@ -20,43 +19,11 @@ const signup = asyncErrorHandler(async (req, res, next) => {
       email,
       role: role || "user",
     });
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.warn(`Signup validation failed`, {
-        username,
-        email,
-        errors: errors.array().map((err) => err.msg),
-      });
-      return next(
-        new apiError(
-          errors
-            .array()
-            .map((err) => err.msg)
-            .join(", "),
-          400
-        )
-      );
-    }
-    if (!username || !email || !password) {
-      logger.warn(`Signup failed - missing required fields`, {
-        username,
-        email,
-      });
-      return next(
-        new apiError("username, email and password are required", 400)
-      );
-    }
     const existedEmail = await User.findOne({ email });
     if (existedEmail) {
       logger.warn(`Signup failed - email already exists`, { email });
       return next(new apiError("Email already exists", 409));
     }
-    if (!passwordValidator(password)) {
-      logger.warn(`Signup failed - weak password`, { username, email });
-      return next(new apiError("Password is too weak", 400));
-    }
-
     const userRole = role === "admin" ? "admin" : "user";
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -104,26 +71,12 @@ const signin = asyncErrorHandler(async (req, res, next) => {
     const { email, password } = req.body;
     logger.info(`User signin attempt`, { email });
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.warn(`Signin validation failed`, {
-        email,
-        errors: errors.array().map((err) => err.msg),
-      });
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    if (!email || !password) {
-      logger.warn(`Signin failed - missing required fields`, { email });
-      return res
-        .status(400)
-        .json({ message: "email and password are required" });
-    }
     const user = await User.findOne({ email });
     if (!user) {
       logger.warn(`Signin failed - user not found`, { email });
-      return res.status(400).json({ message: "User Not Found" });
+      return next(new apiError("User Not Found", 400));
     }
+
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
       logger.warn(`Signin failed - invalid password`, {
@@ -146,10 +99,11 @@ const signin = asyncErrorHandler(async (req, res, next) => {
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
+
     res.status(200).json({
       message: "Signin successful",
       user: {
@@ -171,6 +125,7 @@ const signin = asyncErrorHandler(async (req, res, next) => {
 });
 const newAccessToken = asyncErrorHandler(async (req, res, next) => {
   const token = req.cookies.refresh_token;
+
   if (!token) {
     return res.status(401).json({ message: "No refresh token" });
   }

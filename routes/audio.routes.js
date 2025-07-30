@@ -12,6 +12,13 @@ const {
   getMostPopularAudios,
   getNewRelease,
 } = require("../controllers/audio.controller");
+const {
+  uploadAudioValidator,
+  updateAudioValidator,
+  deleteAudioValidator,
+  streamAudioValidator,
+} = require("../utils/validators/audioValidator");
+
 router.post(
   "/audio",
   authMiddleware(["user", "admin"]),
@@ -19,6 +26,7 @@ router.post(
     { name: "audio", maxCount: 1 },
     { name: "cover", maxCount: 1 },
   ]),
+  uploadAudioValidator,
   uploadAudio
 );
 
@@ -29,11 +37,7 @@ router.get("/audios/me", authMiddleware(["user", "admin"]), getUserAudios);
 router.get(
   "/audios/stream/:audioId",
   authMiddleware(["user", "admin"]),
-  streamAudio
-);
-router.get(
-  "/audios/stream/:audioId",
-  authMiddleware(["user", "admin"]),
+  streamAudioValidator,
   streamAudio
 );
 
@@ -52,12 +56,14 @@ router.put(
     { name: "audio", maxCount: 1 },
     { name: "cover", maxCount: 1 },
   ]),
+  updateAudioValidator,
   updateAudio
 );
 
 router.delete(
   "/audio/:audioId",
   authMiddleware(["user", "admin"]),
+  deleteAudioValidator,
   deleteAudio
 );
 
