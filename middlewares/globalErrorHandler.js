@@ -147,7 +147,7 @@ const globalError = (err, req, res, next) => {
     }
 
     // Handle Multer errors
-    if (err.code && err.code.startsWith("LIMIT_")) {
+    if (typeof err.code === "string" && err.code.startsWith("LIMIT_")) {
       error = handleMulterErrors(err);
     }
 

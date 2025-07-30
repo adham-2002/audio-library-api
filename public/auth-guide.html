@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Authentication Guide - Audio Library API</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+        color: #333;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .content {
+        padding: 2rem;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      h2 {
+        color: #4ecdc4;
+        margin: 2rem 0 1rem 0;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 0.5rem;
+      }
+
+      .step {
+        background: #f8f9fa;
+        border-left: 4px solid #4ecdc4;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+      }
+
+      .step h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .code {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        overflow-x: auto;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        margin: 0.5rem;
+        font-weight: 600;
+        transition: transform 0.2s;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+      }
+
+      .warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔐 Authentication Guide</h1>
+        <p>Learn how to authenticate with the Audio Library API</p>
+      </div>
+
+      <div class="content">
+        <h2>🎯 Quick Start</h2>
+
+        <div class="step">
+          <h3>Step 1: Sign In</h3>
+          <p>First, you need to get an access token by signing in:</p>
+          <div class="code">
+            POST /api/v1/auth/signin Content-Type: application/json { "email":
+            "your-email@example.com", "password": "your-password" }
+          </div>
+        </div>
+
+        <div class="step">
+          <h3>Step 2: Copy Access Token</h3>
+          <p>From the response, copy the <code>accessToken</code>:</p>
+          <div class="code">
+            { "message": "Signin successful", "user": { ... }, "accessToken":
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", "sessionId": "uuid-here"
+            }
+          </div>
+        </div>
+
+        <div class="step">
+          <h3>Step 3: Authorize in Swagger</h3>
+          <p>In the API documentation:</p>
+          <ol>
+            <li>
+              Click the <strong>"Authorize"</strong> button (🔒) at the top
+              right
+            </li>
+            <li>Paste your access token (without "Bearer " prefix)</li>
+            <li>Click <strong>"Authorize"</strong></li>
+            <li>Click <strong>"Close"</strong></li>
+          </ol>
+        </div>
+
+        <div class="step">
+          <h3>Step 4: Make Authenticated Requests</h3>
+          <p>
+            Now you can test any protected endpoint! The token will be
+            automatically included.
+          </p>
+        </div>
+
+        <h2>📋 Manual Testing (Postman/Curl)</h2>
+
+        <p>
+          If you're using Postman or curl, include the token in the
+          Authorization header:
+        </p>
+
+        <div class="code">
+          Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        </div>
+
+        <p>Example with curl:</p>
+        <div class="code">
+          curl -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+          http://localhost:3000/api/v1/sessions
+        </div>
+
+        <h2>⚠️ Common Issues</h2>
+
+        <div class="warning">
+          <strong>401 Unauthorized?</strong>
+          <ul>
+            <li>Make sure your token is not expired (1 hour limit)</li>
+            <li>Don't include "Bearer " when pasting in Swagger</li>
+            <li>Use the refresh token endpoint if your access token expired</li>
+          </ul>
+        </div>
+
+        <div class="success">
+          <strong>💡 Pro Tips:</strong>
+          <ul>
+            <li>Access tokens expire after 1 hour</li>
+            <li>Use the refresh token endpoint to get new access tokens</li>
+            <li>Swagger UI will remember your token for the session</li>
+            <li>You can manage multiple sessions in the /sessions endpoint</li>
+          </ul>
+        </div>
+
+        <h2>🔗 Quick Links</h2>
+
+        <a href="/api-docs" class="btn btn-primary">📖 API Documentation</a>
+        <a href="/health" class="btn">🏥 Health Check</a>
+        <a href="/" class="btn">🏠 Home</a>
+      </div>
+    </div>
+  </body>
+</html>

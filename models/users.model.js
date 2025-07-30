@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true, // Ensure email is unique
     },
     password: {
       type: String,
@@ -25,11 +26,11 @@ const userSchema = new mongoose.Schema(
         ref: "Audio",
       },
     ],
-    favorites:[
+    favorites: [
       {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Audio"
-      }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Audio",
+      },
     ],
     playlist:[{
       type:mongoose.Schema.Types.ObjectId,
