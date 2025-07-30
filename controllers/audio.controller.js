@@ -9,7 +9,6 @@ const getAudioDuration = require("../utils/getAudioDuration");
 
 const logger = require("../utils/logger");
 
-
 // Helper function for single file deletion
 const deleteFileIfExists = async (filePath) => {
   try {
@@ -295,9 +294,7 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
     return next(new apiError("Audio not found", 404));
   }
 
-
   // use path.resolve to get the absolute path so it not depend on the current working directory or file in which the code is running
-
 
   //add listener
   await Audio.updateOne(
@@ -313,8 +310,8 @@ const streamAudio = asyncErrorHandler(async (req, res, next) => {
     {
       $push: {
         history: {
-          $each: [audioId], 
-          $slice: -100, 
+          $each: [audioId],
+          $slice: -100,
         },
       },
     }
@@ -370,21 +367,20 @@ const getMostPopularAudios = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-const getNewRelease = asyncErrorHandler(async(req,res,next)=>{
+const getNewRelease = asyncErrorHandler(async (req, res, next) => {
   const DAYS = 30;
   const since = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000);
 
-  
   const newReleases = await Audio.find({
-    createdAt: { $gte: since }
-  }).sort({ createdAt: -1 }); 
+    createdAt: { $gte: since },
+  }).sort({ createdAt: -1 });
 
   res.status(200).json({
     status: "success",
     results: newReleases.length,
     newReleases: newReleases,
   });
-})
+});
 module.exports = {
   uploadAudio,
   getPublicAudios,
@@ -393,5 +389,5 @@ module.exports = {
   updateAudio,
   streamAudio,
   getMostPopularAudios,
-  getNewRelease
+  getNewRelease,
 };

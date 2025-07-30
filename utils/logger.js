@@ -1,4 +1,12 @@
 const winston = require("winston");
+const path = require("path");
+const fs = require("fs");
+
+// Ensure logs directory exists
+const logDir = "logs";
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
+}
 
 // Define custom log levels
 const customLevels = {
@@ -36,7 +44,7 @@ const consoleFormat = winston.format.combine(
   baseFormat,
   winston.format.colorize({ all: true }),
   winston.format.printf(({ timestamp, level, message, stack }) => {
-    return `${timestamp} ${level}: ${message} ${stack ? `\n${stack}` : ""}`;
+    return `${timestamp} ${level}: ${message}${stack ? `\n${stack}` : ""}`;
   })
 );
 
@@ -52,43 +60,49 @@ const logger = winston.createLogger({
   levels: customLevels.levels,
   level: logLevel,
   transports: [
-    // Console transport (always enabled)
     new winston.transports.Console({
       format: consoleFormat,
       stderrLevels: ["error"],
     }),
   ],
-  exceptionHandlers: [
-    new winston.transports.File({
-      filename: "logs/exceptions.log",
-      format: fileFormat,
-    }),
-  ],
-  rejectionHandlers: [
-    new winston.transports.File({
-      filename: "logs/rejections.log",
-      format: fileFormat,
-    }),
-  ],
-  exitOnError: false,
+  exitOnError: false, // Don't exit on handled exceptions
 });
 
-// Add file transports for production
+// === File Transports for Production ===
 if (isProduction) {
+  // General error log
   logger.add(
     new winston.transports.File({
-      filename: "logs/error.log",
+      filename: path.join(logDir, "error.log"),
       level: "error",
       maxsize: 10 * 1024 * 1024,
       maxFiles: 7,
       format: fileFormat,
     })
   );
+
+  // Combined logs (all levels)
   logger.add(
     new winston.transports.File({
-      filename: "logs/combined.log",
+      filename: path.join(logDir, "combined.log"),
       maxsize: 20 * 1024 * 1024,
       maxFiles: 14,
+      format: fileFormat,
+    })
+  );
+
+  // Handle uncaught exceptions in a separate file
+  logger.exceptions.handle(
+    new winston.transports.File({
+      filename: path.join(logDir, "exceptions.log"),
+      format: fileFormat,
+    })
+  );
+
+  // Handle unhandled promise rejections in a separate file
+  logger.rejections.handle(
+    new winston.transports.File({
+      filename: path.join(logDir, "rejections.log"),
       format: fileFormat,
     })
   );

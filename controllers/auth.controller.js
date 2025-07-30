@@ -1,19 +1,16 @@
-const User = require("../models/users.model");
-const Audio = require("../models/audio.model");
-
-
-
 const passwordValidator = require("../utils/passwordValidator");
+const User = require("../models/users.model");
+const asyncErrorHandler = require("../utils/asyncErrorHandler");
+const apiError = require("../utils/apiError");
 const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const { validationResult } = require("express-validator");
-
-const apiError = require("../utils/apiError");
+const bcrypt = require("bcrypt");
 const logger = require("../utils/logger");
-
-const asyncErrorHandler = require("../utils/asyncErrorHandler");
-
-
-
+const { getRedisClient } = require("../config/redisConnect");
+const { json } = require("express");
+const jwt = require("jsonwebtoken");
+const Token = require("../models/token.model");
+const JWT_SECRET_REFRESH = process.env.JWT_SECRET_REFRESH;
 const signup = asyncErrorHandler(async (req, res, next) => {
   try {
     const { username, email, password, role } = req.body;
@@ -78,8 +75,8 @@ const signup = asyncErrorHandler(async (req, res, next) => {
       role: newUser.role,
     });
 
-    const accessToken = generateAccessToken(newUser);
-    const refreshToken = generateRefreshToken(newUser);
+    const { refreshToken, sessionId } = await generateRefreshToken(newUser);
+    const accessToken = generateAccessToken(newUser, sessionId);
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
@@ -105,7 +102,6 @@ const signup = asyncErrorHandler(async (req, res, next) => {
 const signin = asyncErrorHandler(async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     logger.info(`User signin attempt`, { email });
 
     const errors = validationResult(req);
@@ -118,7 +114,6 @@ const signin = asyncErrorHandler(async (req, res, next) => {
     }
 
     if (!email || !password) {
-
       logger.warn(`Signin failed - missing required fields`, { email });
       return res
         .status(400)
@@ -128,13 +123,6 @@ const signin = asyncErrorHandler(async (req, res, next) => {
     if (!user) {
       logger.warn(`Signin failed - user not found`, { email });
       return res.status(400).json({ message: "User Not Found" });
-
-      return next(new apiError("email and password are required", 400));
-    }
-    const user = await User.findOne({ email });
-    if (!user) {
-      return next(new apiError("User Not Found", 400));
-
     }
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
@@ -145,14 +133,15 @@ const signin = asyncErrorHandler(async (req, res, next) => {
       return next(new apiError("Invalid Password", 400));
     }
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
+    const { refreshToken, sessionId } = await generateRefreshToken(user);
+    const accessToken = generateAccessToken(user, sessionId);
 
     logger.info(`User signed in successfully`, {
       userId: user._id,
       username: user.username,
       email: user.email,
       role: user.role,
+      sessionId,
     });
 
     res.cookie("refresh_token", refreshToken, {
@@ -169,6 +158,7 @@ const signin = asyncErrorHandler(async (req, res, next) => {
         email: user.email,
       },
       accessToken,
+      sessionId,
     });
   } catch (error) {
     logger.error(`Signin error`, {
@@ -177,100 +167,80 @@ const signin = asyncErrorHandler(async (req, res, next) => {
       stack: error.stack,
     });
     next(error);
-
-
   }
 });
-
-const profile = asyncErrorHandler(async (req, res, next) => {
-  const userId = req.user.id;
-
-  const existedUser = await User.findById(userId);
-  if (!existedUser) {
-    return next(new apiError("User not found", 404));
-  }
-  res.json({ userProfile: existedUser });
-});
-const getHistory = asyncErrorHandler(async (req, res, next) => {
-  const userId = req.user.id;
-  const user = await User.findById(userId)
-    .select("history")
-    .populate("history");
-
-  if (!user) {
-    return next(new apiError("User not found", 404));
+const newAccessToken = asyncErrorHandler(async (req, res, next) => {
+  const token = req.cookies.refresh_token;
+  if (!token) {
+    return res.status(401).json({ message: "No refresh token" });
   }
 
-  const history = user.history;
+  const decoded = jwt.verify(token, JWT_SECRET_REFRESH);
+  const redisClient = getRedisClient();
+  // Use sessionKey structure
+  const sessionKey = `session:${decoded.id}:${decoded.sessionId}`;
+  let sessionData = null;
+  try {
+    sessionData = await redisClient.get(sessionKey);
+  } catch (redisError) {
+    logger.warn("Redis get failed, falling back to MongoDB", {
+      error: redisError.message,
+    });
+  }
+
+  // If not in Redis, fallback to MongoDB
+  if (!sessionData) {
+    const tokenDoc = await Token.findOne({ refreshToken: token });
+    if (!tokenDoc) {
+      return res.status(403).json({ message: "Refresh token not recognized" });
+    }
+    sessionData = JSON.stringify({
+      userId: tokenDoc.userId,
+      sessionId: tokenDoc.sessionId,
+      refreshToken: token,
+      createdAt: tokenDoc.createdAt,
+      userRole: tokenDoc.role,
+    });
+
+    // Save in Redis for future requests (if Redis is available)
+    try {
+      const sessionKeyDb = `session:${tokenDoc.userId}:${tokenDoc.sessionId}`;
+      await redisClient.set(sessionKeyDb, sessionData, {
+        EX: Math.floor((tokenDoc.expiredAt - Date.now()) / 1000),
+      });
+      // Add to set
+      await redisClient.sAdd(
+        `user_session_list:${tokenDoc.userId}`,
+        tokenDoc.sessionId
+      );
+      await redisClient.expire(
+        `user_session_list:${tokenDoc.userId}`,
+        Math.floor((tokenDoc.expiredAt - Date.now()) / 1000)
+      );
+    } catch (redisError) {
+      logger.warn("Redis set failed", { error: redisError.message });
+    }
+  }
+
+  const parsed = JSON.parse(sessionData);
+  if (parsed.sessionId !== decoded.sessionId) {
+    return next(new apiError("Session mismatch, please login again", 403));
+  }
+
+  const user = await User.findById(decoded.id);
+  if (!user) return next(new apiError("User not found", 404));
+
+  const newAccessToken = generateAccessToken(user, decoded.sessionId);
+
+  logger.info("Access token refreshed successfully", { userId: user._id });
 
   res.status(200).json({
-    success: true,
-    history,
+    accessToken: newAccessToken,
   });
 });
-const addfavorite = asyncErrorHandler(async (req, res, next) => {
-  const { audioId } = req.params;
-  const userId = req.user.id;
-  if (!audioId) {
-    return next(new apiError("Audio ID is required", 404));
-  }
 
-  const audioExists = await Audio.findById(audioId);
-  if (!audioExists) {
-    return next(new apiError("Audio not found", 404));
-  }
-
-  await User.updateOne({ _id: userId }, { $addToSet: { favorites: audioId } });
-  res.status(200).json({
-    status: "success",
-    message: "Added to favorites",
-  });
-});
-const getFavorites = asyncErrorHandler(async (req, res, next) => {
-  const userId = req.user.id;
-  const user = await User.findById(userId)
-    .select("favorites")
-    .populate("favorites");
-
-  if (!user) {
-    return next(new apiError("User not found", 404));
-  }
-
-  const favorites = user.favorites;
-
-  res.status(200).json({
-    success: true,
-    favorites,
-  });
-});
-const removeFavorite = asyncErrorHandler(async (req, res, next) => {
-  const { audioId } = req.params;
-  const userId = req.user.id;
-
-  if (!audioId) {
-    return next(new apiError("Audio ID is required", 400));
-  }
-
-  const audioExists = await Audio.findById(audioId);
-  if (!audioExists) {
-    return next(new apiError("Audio not found", 404));
-  }
-
-  await User.updateOne({ _id: userId }, { $pull: { favorites: audioId } });
-
-  res.status(200).json({
-    status: "success",
-    message: "Removed from favorites",
-  });
-});
 module.exports = {
-
   signup,
   signin,
-
-  profile,
-  getHistory,
-  addfavorite,
-  getFavorites,
-  removeFavorite,
+  newAccessToken,
 };
