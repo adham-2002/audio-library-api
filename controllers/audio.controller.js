@@ -4,7 +4,11 @@ const path = require("path");
 const fs = require("fs");
 const apiError = require("../utils/apiError");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
+
+const getAudioDuration = require("../utils/getAudioDuration");
+
 const logger = require("../utils/logger");
+
 // Helper function for single file deletion
 const deleteFileIfExists = async (filePath) => {
   try {
@@ -28,7 +32,7 @@ const deleteCoverFile = async (userId, coverName) => {
   if (
     coverName !== "song_cover.png" &&
     coverName !== "public/images/song_cover.png" &&
-    coverName !== "public/images/song_cover.jpg"
+    coverName !== "images/song_cover.jpg"
   ) {
     const coverPath = path.join(
       "uploads",
@@ -49,9 +53,10 @@ const helperAudioDeletion = async (audioDoc, userId) => {
   await deleteCoverFile(userId, audioDoc.coverName);
 };
 const uploadAudio = asyncErrorHandler(async (req, res, next) => {
-  //1) get the title, genre, privacy from the request body and user id from the request object(authMiddleware)
   const { title, genre, privacy = "public" } = req.body;
   const userId = req.user.id;
+
+
 
   logger.info(`Audio upload attempt by user ${userId}`, {
     title,
@@ -62,13 +67,16 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
   });
 
   //2) validate if audio sent as it is required
+
   if (!req.files.audio?.[0].filename) {
     logger.warn(
       `Audio upload failed - no audio file provided by user ${userId}`
     );
     return next(new apiError("You Must Provide Audio", 400));
   }
-  //3) prepare the audio data to be saved in the database
+  const audioFileName = req.files.audio?.[0].filename;
+  const audioPath = path.join(__dirname, "..", "uploads", "audios", `user_${userId}`, audioFileName);
+  const duration = await getAudioDuration(audioPath)
   const audioData = {
     title,
     genre,
@@ -76,9 +84,11 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
     user: userId,
     coverName: req.files.cover?.[0].filename,
     audioName: req.files.audio?.[0].filename,
+    duration
   };
-  //4) create the audio document in the database
   const newAudio = await Audio.create(audioData);
+
+
 
   logger.info(`Audio uploaded successfully`, {
     audioId: newAudio._id,
@@ -89,6 +99,7 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
   });
 
   //5) return the response with the new audio data
+
   res.status(201).json({
     status: "success",
     message: "Audio uploaded successfully",
@@ -97,6 +108,7 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
         id: newAudio._id,
         title: newAudio.title,
         genre: newAudio.genre,
+        duration:newAudio.duration,
         privacy: newAudio.privacy,
         coverName: newAudio.coverName,
         audioName: newAudio.audioName,
