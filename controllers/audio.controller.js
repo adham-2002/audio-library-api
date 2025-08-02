@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const apiError = require("../utils/apiError");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
+const ApiFeatures = require("../utils/apiFeatures");
 
 const getAudioDuration = require("../utils/getAudioDuration");
 
@@ -56,8 +57,6 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
   const { title, genre, privacy = "public" } = req.body;
   const userId = req.user.id;
 
-
-
   logger.info(`Audio upload attempt by user ${userId}`, {
     title,
     genre,
@@ -75,8 +74,15 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
     return next(new apiError("You Must Provide Audio", 400));
   }
   const audioFileName = req.files.audio?.[0].filename;
-  const audioPath = path.join(__dirname, "..", "uploads", "audios", `user_${userId}`, audioFileName);
-  const duration = await getAudioDuration(audioPath)
+  const audioPath = path.join(
+    __dirname,
+    "..",
+    "uploads",
+    "audios",
+    `user_${userId}`,
+    audioFileName
+  );
+  const duration = await getAudioDuration(audioPath);
   const audioData = {
     title,
     genre,
@@ -84,11 +90,9 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
     user: userId,
     coverName: req.files.cover?.[0].filename,
     audioName: req.files.audio?.[0].filename,
-    duration
+    duration,
   };
   const newAudio = await Audio.create(audioData);
-
-
 
   logger.info(`Audio uploaded successfully`, {
     audioId: newAudio._id,
@@ -108,7 +112,7 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
         id: newAudio._id,
         title: newAudio.title,
         genre: newAudio.genre,
-        duration:newAudio.duration,
+        duration: newAudio.duration,
         privacy: newAudio.privacy,
         coverName: newAudio.coverName,
         audioName: newAudio.audioName,
@@ -119,16 +123,33 @@ const uploadAudio = asyncErrorHandler(async (req, res, next) => {
 });
 
 const getPublicAudios = asyncErrorHandler(async (req, res, next) => {
-  logger.info("Fetching public audios");
-  const publicAudios = await Audio.find({ privacy: "public" }).populate(
-    "user",
-    "username email"
+  logger.info("Fetching public audios with query parameters", req.query);
+
+  // Count total documents for pagination
+  const documentsCount = await Audio.countDocuments({ privacy: "public" });
+
+  // Apply ApiFeatures
+  const apiFeatures = new ApiFeatures(
+    Audio.find({ privacy: "public" }).populate("user", "username email"),
+    req.query
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search("Audio")
+    .paginate(documentsCount);
+
+  const publicAudios = await apiFeatures.mongooseQuery;
+
+  logger.info(
+    `Retrieved ${publicAudios.length} public audios out of ${documentsCount} total`
   );
 
-  logger.info(`Retrieved ${publicAudios.length} public audios`);
   res.status(200).json({
     status: "success",
     message: "Public audios fetched successfully",
+    results: publicAudios.length,
+    pagination: apiFeatures.paginationResult,
     data: {
       audios: publicAudios,
     },
@@ -136,21 +157,36 @@ const getPublicAudios = asyncErrorHandler(async (req, res, next) => {
 });
 const getUserAudios = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user.id;
-  logger.info(`Fetching audios for user ${userId}`);
-
-  const myAudios = await Audio.find({ user: userId }).populate(
-    "user",
-    "username"
+  logger.info(
+    `Fetching audios for user ${userId} with query parameters`,
+    req.query
   );
 
-  if (myAudios.length === 0) {
-    logger.info(`No audios found for user ${userId}`);
-    return next(new apiError("You haven't uploaded any audios", 404));
-  }
+  // Count total documents for pagination
+  const documentsCount = await Audio.countDocuments({ user: userId });
 
-  logger.info(`Retrieved ${myAudios.length} audios for user ${userId}`);
+  // Apply ApiFeatures
+  const apiFeatures = new ApiFeatures(
+    Audio.find({ user: userId }).populate("user", "username"),
+    req.query
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search("Audio")
+    .paginate(documentsCount);
+
+  const myAudios = await apiFeatures.mongooseQuery;
+
+  logger.info(
+    `Retrieved ${myAudios.length} audios for user ${userId} out of ${documentsCount} total`
+  );
+
   res.status(200).json({
-    message: "successfully",
+    status: "success",
+    message: "User audios fetched successfully",
+    results: myAudios.length,
+    pagination: apiFeatures.paginationResult,
     data: {
       audios: myAudios,
     },

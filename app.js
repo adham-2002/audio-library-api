@@ -9,6 +9,7 @@ const audioRoute = require("./routes/audio.routes");
 const adminRoute = require("./routes/admin.routes");
 const authRoute = require("./routes/auth.routes");
 const sessionRoute = require("./routes/session.routes");
+const playlistRoute = require("./routes/playlist.routes");
 const core = require("cors");
 
 const morganMiddleware = require("./middlewares/morganLogger");
@@ -108,6 +109,7 @@ app.use("/api/v1", audioRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/sessions", sessionRoute);
+app.use("/api/v1/playlists", playlistRoute);
 if (process.env.NODE_ENV === "development") {
   console.log("Development Mode");
 } else {

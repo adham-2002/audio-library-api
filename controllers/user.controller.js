@@ -3,6 +3,7 @@ const Audio = require("../models/audio.model");
 
 const apiError = require("../utils/apiError");
 const logger = require("../utils/logger");
+const ApiFeatures = require("../utils/apiFeatures");
 
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 const profile = asyncErrorHandler(async (req, res, next) => {
@@ -16,19 +17,47 @@ const profile = asyncErrorHandler(async (req, res, next) => {
 });
 const getHistory = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const user = await User.findById(userId)
-    .select("history")
-    .populate("history");
 
+  const user = await User.findById(userId).select("history");
   if (!user) {
     return next(new apiError("User not found", 404));
   }
 
-  const history = user.history;
+  // Get history audio IDs
+  const historyIds = user.history;
+
+  if (historyIds.length === 0) {
+    return res.status(200).json({
+      status: "success",
+      message: "No history found",
+      results: 0,
+      pagination: {},
+      data: { history: [] },
+    });
+  }
+
+  // Count total documents for pagination
+  const documentsCount = historyIds.length;
+
+  // Apply ApiFeatures to Audio model using history IDs
+  const apiFeatures = new ApiFeatures(
+    Audio.find({ _id: { $in: historyIds } }),
+    req.query
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search("Audio")
+    .paginate(documentsCount);
+
+  const history = await apiFeatures.mongooseQuery;
 
   res.status(200).json({
-    success: true,
-    history,
+    status: "success",
+    message: "History fetched successfully",
+    results: history.length,
+    pagination: apiFeatures.paginationResult,
+    data: { history },
   });
 });
 const addfavorite = asyncErrorHandler(async (req, res, next) => {
@@ -51,19 +80,47 @@ const addfavorite = asyncErrorHandler(async (req, res, next) => {
 });
 const getFavorites = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const user = await User.findById(userId)
-    .select("favorites")
-    .populate("favorites");
 
+  const user = await User.findById(userId).select("favorites");
   if (!user) {
     return next(new apiError("User not found", 404));
   }
 
-  const favorites = user.favorites;
+  // Get favorites audio IDs
+  const favoriteIds = user.favorites;
+
+  if (favoriteIds.length === 0) {
+    return res.status(200).json({
+      status: "success",
+      message: "No favorites found",
+      results: 0,
+      pagination: {},
+      data: { favorites: [] },
+    });
+  }
+
+  // Count total documents for pagination
+  const documentsCount = favoriteIds.length;
+
+  // Apply ApiFeatures to Audio model using favorite IDs
+  const apiFeatures = new ApiFeatures(
+    Audio.find({ _id: { $in: favoriteIds } }),
+    req.query
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search("Audio")
+    .paginate(documentsCount);
+
+  const favorites = await apiFeatures.mongooseQuery;
 
   res.status(200).json({
-    success: true,
-    favorites,
+    status: "success",
+    message: "Favorites fetched successfully",
+    results: favorites.length,
+    pagination: apiFeatures.paginationResult,
+    data: { favorites },
   });
 });
 const removeFavorite = asyncErrorHandler(async (req, res, next) => {
