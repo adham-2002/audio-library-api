@@ -25,14 +25,6 @@ const storage = multer.diskStorage({
     // For new uploads or profile updates, use current user's ID
     let userId = req.user.id;
 
-    // If this is an update (audio object exists in req), use audio owner's ID
-    if (
-      req.audio &&
-      (file.fieldname === "audio" || file.fieldname === "cover")
-    ) {
-      userId = req.audio.user.toString();
-    }
-
     if (!userId) {
       return cb(new apiError("User ID is required", 401), false);
     }
