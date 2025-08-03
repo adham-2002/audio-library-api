@@ -1,11 +1,13 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/authMiddleware");
+const checkAudioOwnership = require("../middlewares/checkAudioOwnership");
 const upload = require("../config/multer");
 const router = express.Router();
 const {
   uploadAudio,
   getPublicAudios,
   getUserAudios,
+  getSpecificAudio,
   deleteAudio,
   streamAudio,
   updateAudio,
@@ -32,11 +34,17 @@ router.post(
 
 router.get("/audios", getPublicAudios);
 
-router.get("/audios/me", authMiddleware(["user", "admin"]), getUserAudios);
-
+router.get("/audios/me", authMiddleware(["user"]), getUserAudios);
+router.get(
+  "/audios/:audioId",
+  authMiddleware(["user", "admin"]),
+  checkAudioOwnership,
+  getSpecificAudio
+);
 router.get(
   "/audios/stream/:audioId",
   authMiddleware(["user", "admin"]),
+  checkAudioOwnership,
   streamAudioValidator,
   streamAudio
 );
@@ -52,6 +60,7 @@ router.get("/audio/new-releases", getNewRelease);
 router.put(
   "/audios/:audioId",
   authMiddleware(["admin", "user"]),
+  checkAudioOwnership,
   upload.fields([
     { name: "audio", maxCount: 1 },
     { name: "cover", maxCount: 1 },
@@ -63,6 +72,7 @@ router.put(
 router.delete(
   "/audio/:audioId",
   authMiddleware(["user", "admin"]),
+  checkAudioOwnership,
   deleteAudioValidator,
   deleteAudio
 );

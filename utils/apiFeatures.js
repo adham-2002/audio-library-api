@@ -78,7 +78,7 @@ class ApiFeatures {
           break;
 
         default:
-          query[searchBy || "name"] = { $regex: keyword, $options: "i" };
+          query[searchBy || "username"] = { $regex: keyword, $options: "i" };
       }
 
       this.mongooseQuery = this.mongooseQuery.find(query);
