@@ -10,10 +10,12 @@ const {
 const { audioIdValidator } = require("../utils/validators/audioValidator");
 const router = express.Router();
 
+// User profile and data endpoints (no rate limiting - user's own data)
 router.get("/profile", authMiddleware(["user", "admin"]), profile);
-
 router.get("/history", authMiddleware(["user", "admin"]), getHistory);
 router.get("/favorites", authMiddleware(["user", "admin"]), getFavorites);
+
+// User actions (no rate limiting - simple operations)
 router.post(
   "/add-favorite/:audioId",
   authMiddleware(["user", "admin"]),
