@@ -6,6 +6,7 @@ const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const logger = require("../utils/logger");
+
 const { getRedisClient } = require("../config/redisConnect");
 const jwt = require("jsonwebtoken");
 const Token = require("../models/token.model");
@@ -53,75 +54,73 @@ const signup = asyncErrorHandler(async (req, res, next) => {
     });
 
     res.status(201).json({
+      status: "success",
       message: "Signup successful",
-      user: {
-        id: newUser._id,
-        name: newUser.username,
-        email: newUser.email,
-        role: newUser.role,
+      data: {
+        user: {
+          id: newUser._id,
+          name: newUser.username,
+          email: newUser.email,
+          role: newUser.role,
+        },
+        accessToken,
       },
-      accessToken,
     });
   } catch (error) {
     next(error);
   }
 });
 const signin = asyncErrorHandler(async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    logger.info(`User signin attempt`, { email });
+  const { email, password } = req.body;
+  logger.info(`User signin attempt`, { email });
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      logger.warn(`Signin failed - user not found`, { email });
-      return next(new apiError("User Not Found", 400));
-    }
+  const user = await User.findOne({ email });
+  if (!user) {
+    logger.warn(`Signin failed - user not found`, { email });
+    return next(new apiError("User Not Found", 400));
+  }
 
-    const isMatched = await bcrypt.compare(password, user.password);
-    if (!isMatched) {
-      logger.warn(`Signin failed - invalid password`, {
-        email,
-        userId: user._id,
-      });
-      return next(new apiError("Invalid Password", 400));
-    }
-
-    const { refreshToken, sessionId } = await generateRefreshToken(user);
-    const accessToken = generateAccessToken(user, sessionId);
-
-    logger.info(`User signed in successfully`, {
+  const isMatched = await bcrypt.compare(password, user.password);
+  if (!isMatched) {
+    logger.warn(`Signin failed - invalid password`, {
+      email,
       userId: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      sessionId,
     });
+    return next(new apiError("Invalid Password", 400));
+  }
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
+  const { refreshToken, sessionId } = await generateRefreshToken(user);
+  const accessToken = generateAccessToken(user, sessionId);
 
-    res.status(200).json({
-      message: "Signin successful",
+  logger.info(`User signed in successfully`, {
+    userId: user._id,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    sessionId,
+  });
+
+  res.cookie("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Signin successful",
+    data: {
       user: {
         id: user._id,
-        name: user.name,
+        name: user.username,
         email: user.email,
+        role: user.role,
       },
+
       accessToken,
-      sessionId,
-    });
-  } catch (error) {
-    logger.error(`Signin error`, {
-      email: req.body?.email,
-      error: error.message,
-      stack: error.stack,
-    });
-    next(error);
-  }
+    },
+  });
 });
 const newAccessToken = asyncErrorHandler(async (req, res, next) => {
   const token = req.cookies.refresh_token;
@@ -190,7 +189,13 @@ const newAccessToken = asyncErrorHandler(async (req, res, next) => {
   logger.info("Access token refreshed successfully", { userId: user._id });
 
   res.status(200).json({
-    accessToken: newAccessToken,
+    status: "success",
+    message: "Access token refreshed successfully",
+    data: {
+      tokens: {
+        accessToken: newAccessToken,
+      },
+    },
   });
 });
 

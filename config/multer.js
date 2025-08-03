@@ -21,10 +21,22 @@ const audioMimeTypes = [
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const userId = req.user.id;
+    // For audio/cover updates, use audio owner's ID if available
+    // For new uploads or profile updates, use current user's ID
+    let userId = req.user.id;
+
+    // If this is an update (audio object exists in req), use audio owner's ID
+    if (
+      req.audio &&
+      (file.fieldname === "audio" || file.fieldname === "cover")
+    ) {
+      userId = req.audio.user.toString();
+    }
+
     if (!userId) {
       return cb(new apiError("User ID is required", 401), false);
     }
+
     let basePath = "";
     if (file.fieldname === "profile") {
       basePath = path.join("uploads", "profiles", `user_${userId}`);
@@ -38,7 +50,6 @@ const storage = multer.diskStorage({
     fs.mkdir(basePath, { recursive: true })
       .then(() => cb(null, basePath))
       .catch((err) => cb(err));
-
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
