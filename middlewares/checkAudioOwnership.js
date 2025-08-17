@@ -14,7 +14,7 @@ const checkAudioOwnership = async (req, res, next) => {
     }
 
     // Check ownership for regular users
-    if (userRole !== "admin" && audio.user.toString() !== userId) {
+    if (userRole !== "admin" && audio.user.toString() !== userId && audio.privacy === "private") {
       return next(
         new apiError("You do not have permission to access this audio", 403)
       );

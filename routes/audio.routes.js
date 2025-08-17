@@ -44,6 +44,13 @@ router.get("/audios", getPublicAudios);
 // Get user's audios (no rate limiting - user's own data)
 router.get("/audios/me", authMiddleware(["user"]), getUserAudios);
 
+
+// Get popular audios (no rate limiting - public data)
+router.get("/audios/popular",authMiddleware(["user", "admin"]),getMostPopularAudios);
+// Get new releases (no rate limiting - public data)
+router.get("/audio/new-releases", getNewRelease);
+
+
 // Get specific audio (no rate limiting - simple read operation)
 router.get(
   "/audios/:audioId",
@@ -60,17 +67,6 @@ router.get(
   streamAudioValidator,
   streamAudio
 );
-
-// Get popular audios (no rate limiting - public data)
-router.get(
-  "/audios/popular",
-  authMiddleware(["user", "admin"]),
-  getMostPopularAudios
-);
-
-// Get new releases (no rate limiting - public data)
-router.get("/audio/new-releases", getNewRelease);
-
 // Update audio (needs rate limiting when files are involved)
 router.put(
   "/audios/:audioId",

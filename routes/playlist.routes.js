@@ -16,10 +16,10 @@ const {
 const router = express.Router();
 
 router.get("/", authMiddleware(["user", "admin"]), getPublicPlaylist);
+router.get("/mine", authMiddleware(["user", "admin"]), getAllPlaylists);
+router.post("/", authMiddleware(["user", "admin"]), createNewPlaylist);
 router.get("/:playlistId", authMiddleware(["user", "admin"]), getPlaylist);
 router.get("/:playlistId/mine", authMiddleware(["user", "admin"]), getPlaylist);
-router.get("/mine", authMiddleware(["user", "admin"]), getAllPlaylists);
-router.post("/playlists", authMiddleware(["user", "admin"]), createNewPlaylist);
 router.put(
   "/playlists/:playlistId",
   authMiddleware(["user", "admin"]),
