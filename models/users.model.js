@@ -32,15 +32,19 @@ const userSchema = new mongoose.Schema(
         ref: "Audio",
       },
     ],
-    playlist:[{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"Playlist"
-    }],
+    playlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Playlist",
+      },
+    ],
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
     },
+    isActive: { type: Boolean, default: true },
+    deactivatedAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

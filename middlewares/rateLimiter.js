@@ -6,7 +6,6 @@ const {
   adminConfig,
 } = require("../config/rateLimiterConfig");
 
-// Create rate limiter instances (only the ones we actually use)
 const authLimiter = rateLimit(authConfig);
 const uploadLimiter = rateLimit(uploadConfig);
 const criticalLimiter = rateLimit(criticalConfig);

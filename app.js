@@ -12,6 +12,9 @@ const sessionRoute = require("./routes/session.routes");
 const playlistRoute = require("./routes/playlist.routes");
 const core = require("cors");
 
+// Start cron jobs
+require("./cronJobs/cleanupInactiveUsers");
+
 const morganMiddleware = require("./middlewares/morganLogger");
 const {
   globalError,
@@ -104,7 +107,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.use("/api/v1", userRoute);
+app.use("/api/v1/users", userRoute);
 app.use("/api/v1", audioRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1/auth", authRoute);

@@ -19,35 +19,31 @@ router.get("/", authMiddleware(["user", "admin"]), getPublicPlaylist);
 router.get("/:playlistId", authMiddleware(["user", "admin"]), getPlaylist);
 router.get("/:playlistId/mine", authMiddleware(["user", "admin"]), getPlaylist);
 router.get("/mine", authMiddleware(["user", "admin"]), getAllPlaylists);
-router.post("/playlists", authMiddleware(["user", "admin"]), createNewPlaylist);
-router.put(
-  "/playlists/:playlistId",
-  authMiddleware(["user", "admin"]),
-  updatePlaylist
-);
+router.post("/", authMiddleware(["user", "admin"]), createNewPlaylist);
+router.put("/:playlistId", authMiddleware(["user", "admin"]), updatePlaylist);
 router.patch(
-  "/playlists/:playlistId",
+  "/:playlistId",
   authMiddleware(["user", "admin"]),
   addAudioToPlaylist
 );
 router.delete(
-  "/playlists/:playlistId/audios/:audioId",
+  "/:playlistId/audios/:audioId",
   authMiddleware(["user", "admin"]),
   removeFromPlaylist
 );
 router.delete(
-  "/playlists/:playlistId",
+  "/:playlistId",
   authMiddleware(["user", "admin"]),
   deletePlaylist
 );
 
 router.post(
-  "/playlists/:playlistId/share",
+  "/:playlistId/share",
   authMiddleware(["user", "admin"]),
   sharePlaylist
 );
 router.get(
-  "/playlists/shared/:token",
+  "/shared/:token",
   authMiddleware(["user", "admin"]),
   getSharedPlaylist
 );

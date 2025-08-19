@@ -19,7 +19,7 @@
 								"exec": [
 									"const jsonData = pm.response.json();\r",
 									"// save the accessToken to an environment variable\r",
-									"pm.environment.set(\"accessToken\", jsonData.accessToken);"
+									"pm.environment.set(\"accessToken\", jsonData.data.accessToken);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -31,7 +31,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"raw": "// {\r\n//     \"email\":\"adham2@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adha1m@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -49,16 +49,120 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// {\r\n//     \"email\":\"adham2@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adha1m@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/auth/signin",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"auth",
+										"signin"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "RateLimit-Policy",
+									"value": "5;w=900"
+								},
+								{
+									"key": "RateLimit-Limit",
+									"value": "5"
+								},
+								{
+									"key": "RateLimit-Remaining",
+									"value": "4"
+								},
+								{
+									"key": "RateLimit-Reset",
+									"value": "900"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWY5YTQ5N2U5OGJkZGExZmU5MWQ2YyIsInJvbGUiOiJ1c2VyIiwic2Vzc2lvbklkIjoiOWIzZTAwMmEtZDJmZS00MmY2LWE1MTMtMjBjOTUwNzBmMTJiIiwiaWF0IjoxNzU1NDY3NzM3LCJleHAiOjE3NTYwNzI1Mzd9.U4Y2HeqtUn6Et4PZwH908ATk8jhNr53F1YKgJOx0GIs; Max-Age=2592000; Path=/; Expires=Tue, 16 Sep 2025 21:55:38 GMT; HttpOnly; SameSite=Strict"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "435"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1b3-vn4gBqL6q+tbT4lAB+9Kh0BY0Lw\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 17 Aug 2025 21:55:38 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Signin successful\",\n    \"data\": {\n        \"user\": {\n            \"id\": \"689f9a497e98bdda1fe91d6c\",\n            \"name\": \"ad1ham2002\",\n            \"email\": \"adha1m@gmail.com\",\n            \"role\": \"user\"\n        },\n        \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OWY5YTQ5N2U5OGJkZGExZmU5MWQ2YyIsInJvbGUiOiJ1c2VyIiwic2Vzc2lvbklkIjoiOWIzZTAwMmEtZDJmZS00MmY2LWE1MTMtMjBjOTUwNzBmMTJiIiwiaWF0IjoxNzU1NDY3NzM4LCJleHAiOjE3NTU0NzEzMzh9.La_wpadfMfHUQUwRLuHxUfrYtWqR4KjlNEYA1DHc3LY\"\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"// save the accessToken to an environment variable\r",
+									"pm.environment.set(\"accessToken\", jsonData.data.accessToken);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "// {\r\n//     \"username\":\"adham2002\", \r\n//     \"email\":\"adham51732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"username\":\"adham2002\", \r\n    \"email\":\"adh11112am@gmail.com\",\r\n    \"password\":\"Adham@2002\",\r\n    \"role\":\"admin\"\r\n}",
+							"raw": "{\r\n    \"username\":\"ad1ham2002\", \r\n    \"email\":\"adha1m@gmail.com\",\r\n    \"password\":\"Adham@2002\",\r\n    \"role\":\"user\"\r\n}\r\n// {\r\n//     \"username\":\"adham2003\", \r\n//     \"email\":\"adham2@gmail.com\",\r\n//     \"password\":\"Adham@2002\",\r\n//     \"role\":\"user\"\r\n// }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -152,7 +256,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -201,7 +305,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -252,7 +356,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -301,7 +405,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "// {\r\n//     \"email\":\"adham54732@gmail.com\",\r\n//     \"password\":\"Adham@2002\"\r\n// }\r\n{\r\n    \"email\":\"adham@gmail.com\",\r\n    \"password\":\"Adham@2002\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -320,7 +424,7 @@
 							"variable": [
 								{
 									"key": "sessionId",
-									"value": ""
+									"value": "8c0728e2-6592-4f65-8b41-11da9724eb7a"
 								}
 							]
 						}
@@ -332,63 +436,6 @@
 		{
 			"name": "audio",
 			"item": [
-				{
-					"name": "create Audio",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "audio",
-									"type": "file",
-									"src": "/C:/Users/adham/Desktop/test.mp3"
-								},
-								{
-									"key": "cover",
-									"type": "file",
-									"src": "/C:/Users/adham/Desktop/Screenshot 2025-06-17 143921.png"
-								},
-								{
-									"key": "title",
-									"value": "second song but private",
-									"type": "text"
-								},
-								{
-									"key": "genre",
-									"value": "pop",
-									"type": "text"
-								},
-								{
-									"key": "privacy",
-									"value": "private",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{URL}}/audio",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"audio"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "get all Audios (Public Only)",
 					"request": {
@@ -405,17 +452,140 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{URL}}/audios/",
+							"raw": "{{URL}}/audios/?searchBy=-createdAt",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"audios",
 								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "duration[gt]",
+									"value": "30",
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": "love",
+									"disabled": true
+								},
+								{
+									"key": "searchBy",
+									"value": "-createdAt"
+								},
+								{
+									"key": "sort",
+									"value": "title",
+									"disabled": true
+								}
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "get all Audios (Public Only)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/audios/?searchBy=-createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"audios",
+										""
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "3",
+											"disabled": true
+										},
+										{
+											"key": "duration[gt]",
+											"value": "30",
+											"disabled": true
+										},
+										{
+											"key": "keyword",
+											"value": "love",
+											"disabled": true
+										},
+										{
+											"key": "searchBy",
+											"value": "-createdAt"
+										},
+										{
+											"key": "sort",
+											"value": "title",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "2568"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"a08-MkVBPPv+ik+C2jw8UQAMQh+BZYs\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 17 Aug 2025 21:55:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Public audios fetched successfully\",\n    \"results\": 6,\n    \"pagination\": {\n        \"currentPage\": 1,\n        \"limit\": 10,\n        \"numberOfPages\": 1\n    },\n    \"data\": {\n        \"audios\": [\n            {\n                \"_id\": \"68a06f688274bcde8437eadc\",\n                \"title\": \"populatrrrrrrrrrrr\",\n                \"genre\": \"pop\",\n                \"duration\": 19.2,\n                \"privacy\": \"public\",\n                \"coverName\": \"images/song_cover.jpg\",\n                \"user\": {\n                    \"_id\": \"689f9a497e98bdda1fe91d6c\",\n                    \"username\": \"ad1ham2002\",\n                    \"email\": \"adha1m@gmail.com\"\n                },\n                \"audioListeners\": [\n                    \"689f9a497e98bdda1fe91d6c\"\n                ],\n                \"listenersCount\": 1,\n                \"audioName\": \"audio_1755344744836.mp3\",\n                \"createdAt\": \"2025-08-16T11:45:44.865Z\",\n                \"updatedAt\": \"2025-08-16T11:45:58.115Z\"\n            },\n            {\n                \"_id\": \"688f7081e08c405efddd0492\",\n                \"title\": \"fk the world\",\n                \"genre\": \"pop\",\n                \"duration\": 42.06,\n                \"privacy\": \"public\",\n                \"coverName\": \"cover_1754230953119.png\",\n                \"user\": {\n                    \"_id\": \"688f6bc2f612c5cffa03150b\",\n                    \"username\": \"adham2002\",\n                    \"email\": \"adham@gmail.com\"\n                },\n                \"audioListeners\": [],\n                \"listenersCount\": 0,\n                \"audioName\": \"audio_1754230953116.mp3\",\n                \"createdAt\": \"2025-08-03T14:21:53.705Z\",\n                \"updatedAt\": \"2025-08-03T14:22:33.124Z\"\n            },\n            {\n                \"_id\": \"688f6fcde08c405efddd048b\",\n                \"title\": \"populatrrrrrrrrrrr\",\n                \"genre\": \"pop\",\n                \"duration\": 19.2,\n                \"privacy\": \"public\",\n                \"coverName\": \"cover_1754230733814.png\",\n                \"user\": {\n                    \"_id\": \"688f6bc2f612c5cffa03150b\",\n                    \"username\": \"adham2002\",\n                    \"email\": \"adham@gmail.com\"\n                },\n                \"audioListeners\": [],\n                \"listenersCount\": 0,\n                \"audioName\": \"audio_1754230733812.mp3\",\n                \"createdAt\": \"2025-08-03T14:18:53.819Z\",\n                \"updatedAt\": \"2025-08-03T14:18:53.819Z\"\n            },\n            {\n                \"_id\": \"688f6fc1e08c405efddd0489\",\n                \"title\": \"populatrrrrrrrrrrr\",\n                \"genre\": \"pop\",\n                \"duration\": 19.2,\n                \"privacy\": \"public\",\n                \"coverName\": \"cover_1754230721722.png\",\n                \"user\": {\n                    \"_id\": \"688f6bc2f612c5cffa03150b\",\n                    \"username\": \"adham2002\",\n                    \"email\": \"adham@gmail.com\"\n                },\n                \"audioListeners\": [],\n                \"listenersCount\": 0,\n                \"audioName\": \"audio_1754230721721.mp3\",\n                \"createdAt\": \"2025-08-03T14:18:41.727Z\",\n                \"updatedAt\": \"2025-08-03T14:18:41.727Z\"\n            },\n            {\n                \"_id\": \"688f6d91e08c405efddd047f\",\n                \"title\": \"fk the world\",\n                \"genre\": \"pop\",\n                \"duration\": 19.2,\n                \"privacy\": \"public\",\n                \"coverName\": \"cover_1754230798110.png\",\n                \"user\": {\n                    \"_id\": \"688f6bc2f612c5cffa03150b\",\n                    \"username\": \"adham2002\",\n                    \"email\": \"adham@gmail.com\"\n                },\n                \"audioListeners\": [],\n                \"listenersCount\": 0,\n                \"audioName\": \"audio_1754230798108.mp3\",\n                \"createdAt\": \"2025-08-03T14:09:21.507Z\",\n                \"updatedAt\": \"2025-08-03T14:19:58.115Z\"\n            },\n            {\n                \"_id\": \"688f6bf1f612c5cffa031513\",\n                \"title\": \"new\",\n                \"genre\": \"pop\",\n                \"duration\": 42.06,\n                \"privacy\": \"public\",\n                \"coverName\": \"cover_1754230096020.png\",\n                \"user\": {\n                    \"_id\": \"688f6bc2f612c5cffa03150b\",\n                    \"username\": \"adham2002\",\n                    \"email\": \"adham@gmail.com\"\n                },\n                \"audioListeners\": [\n                    \"688f6bc2f612c5cffa03150b\"\n                ],\n                \"listenersCount\": 1,\n                \"audioName\": \"audio_1754230096013.mp3\",\n                \"createdAt\": \"2025-08-03T14:02:25.154Z\",\n                \"updatedAt\": \"2025-08-03T14:08:16.044Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
 				},
 				{
 					"name": "get my audios(private Only)",
@@ -446,66 +616,6 @@
 					"response": []
 				},
 				{
-					"name": "Update Audio",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2QxOGI3M2I0ZjliOTM3MTU3MDI1YiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzE5NjEwOSwiZXhwIjoxNzU1Nzg4MTA5fQ.foUnpa5Dn8suPcwMmjHpvLmB52qb-XkiXCTI6cvmNJU",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "audio",
-									"type": "file",
-									"src": [],
-									"disabled": true
-								},
-								{
-									"key": "cover",
-									"type": "file",
-									"src": "/C:/Users/adham/Desktop/tumblr_e8bf9899b6ece03a085882e5bd0164b5_c9b1dc20_1280.png",
-									"disabled": true
-								},
-								{
-									"key": "title",
-									"value": "yessssssssssssssssssssss",
-									"type": "text"
-								},
-								{
-									"key": "genre",
-									"value": "pop",
-									"type": "text"
-								},
-								{
-									"key": "privacy",
-									"value": "public",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{URL}}/audios/687fa5ccf98532f7da9c5a32",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"audios",
-								"687fa5ccf98532f7da9c5a32"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "stream audio",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -524,18 +634,186 @@
 						"method": "GET",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": []
+							"mode": "urlencoded",
+							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{URL}}/audios/stream/6881db3455da06a7ff929193",
+							"raw": "{{URL}}/audios/stream/:audioId",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"audios",
 								"stream",
-								"6881db3455da06a7ff929193"
+								":audioId"
+							],
+							"variable": [
+								{
+									"key": "audioId",
+									"value": "688f6bf1f612c5cffa031513"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific audio",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{URL}}/audios/:audioId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audios",
+								":audioId"
+							],
+							"variable": [
+								{
+									"key": "audioId",
+									"value": "688f4ec1c5999768205864d6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Audio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": "postman-cloud:///1f07056b-dbcf-40e0-949f-c50654f27604"
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/A:/MyGitHub2024/audio-library-api/__test__/img2.png"
+								},
+								{
+									"key": "title",
+									"value": "populatrrrrrrrrrrr",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "public",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/audio",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Audio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "audio",
+									"type": "file",
+									"src": "/A:/MyGitHub2024/audio-library-api/__test__/audio2.mp3"
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/A:/MyGitHub2024/audio-library-api/__test__/img1.png"
+								},
+								{
+									"key": "title",
+									"value": "fk the world ",
+									"type": "text"
+								},
+								{
+									"key": "genre",
+									"value": "pop",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "public",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/audios/:audioId",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"audios",
+								":audioId"
+							],
+							"variable": [
+								{
+									"key": "audioId",
+									"value": "688f7081e08c405efddd0492"
+								}
 							]
 						}
 					},
@@ -557,13 +835,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{URL}}/audio/687fa5b6f98532f7da9c5a2e",
+							"raw": "{{URL}}/audio/688f65e3c72e99825f7e2404",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"audio",
-								"687fa5b6f98532f7da9c5a2e"
+								"688f65e3c72e99825f7e2404"
 							]
 						}
 					},
@@ -666,6 +944,33 @@
 			"name": "playlist",
 			"item": [
 				{
+					"name": "get all playlists {Public Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/playlists",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"playlists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create playlist",
 					"request": {
 						"auth": {
@@ -680,6 +985,15 @@
 						},
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\":\"love songs\",\r\n    \"privacy\":\"public\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{URL}}/playlists",
 							"host": [
@@ -761,33 +1075,6 @@
 							"path": [
 								"playlists",
 								"688392eb30b3efa953e6bd03"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get all playlists {Public Only)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/playlists",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"playlists"
 							]
 						}
 					},
@@ -1054,6 +1341,145 @@
 		{
 			"name": "user",
 			"item": [
+				{
+					"name": "Get List of Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "ratingsAverage[lte]",
+									"value": "4",
+									"disabled": true
+								},
+								{
+									"key": "price[gte]",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "sold[gte]",
+									"value": "40",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-sold,price",
+									"disabled": true
+								},
+								{
+									"key": "fields",
+									"value": "price,title,",
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": "mobile",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate User account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/689f9a497e98bdda1fe91d6c",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"689f9a497e98bdda1fe91d6c"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "ratingsAverage[lte]",
+									"value": "4",
+									"disabled": true
+								},
+								{
+									"key": "price[gte]",
+									"value": "50",
+									"disabled": true
+								},
+								{
+									"key": "sold[gte]",
+									"value": "40",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-sold,price",
+									"disabled": true
+								},
+								{
+									"key": "fields",
+									"value": "price,title,",
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": "mobile",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "get profile",
 					"protocolProfileBehavior": {

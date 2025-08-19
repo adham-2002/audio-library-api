@@ -4,16 +4,143 @@ const Audio = require("../models/audio.model");
 const apiError = require("../utils/apiError");
 const logger = require("../utils/logger");
 const ApiFeatures = require("../utils/apiFeatures");
+const bcrypt = require("bcrypt");
 
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
-const profile = asyncErrorHandler(async (req, res, next) => {
-  const userId = req.user.id;
+// @desc Get all users
+// @route GET /api/v1/users
+// @access Private
+const getAllUsers = asyncErrorHandler(async (req, res, next) => {
+  const countDocuments = await User.countDocuments();
 
-  const existedUser = await User.findById(userId);
-  if (!existedUser) {
+  // Always exclude sensitive fields like password
+  const apiFeatures = new ApiFeatures(
+    User.find().select("username email profilePic createdAt"),
+    req.query
+  )
+    .filter()
+    .sort()
+    .limitFields()
+    .search("User")
+    .paginate(countDocuments);
+
+  const users = await apiFeatures.mongooseQuery;
+
+  res.status(200).json({
+    status: "success",
+    message: "All users fetched successfully",
+    results: users.length,
+    pagination: apiFeatures.paginationResult,
+    data: {
+      users,
+    },
+  });
+});
+// @desc Get user by ID
+// @route GET /api/v1/users/:id
+// @access Private
+const getUserById = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await User.findById(id).select(
+    "username email profilePic createdAt"
+  );
+  if (!user) {
     return next(new apiError("User not found", 404));
   }
-  res.json({ userProfile: existedUser });
+
+  res.status(200).json({
+    status: "success",
+    message: "User fetched successfully",
+    data: {
+      user,
+    },
+  });
+});
+// @desc Deactivate a user account
+// @route PUT /api/v1/users/:id/deactivate
+// @access Private
+const userDeactivate = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const requesterId = req.user.id;
+  const requesterRole = req.user.role;
+  if (requesterRole !== "admin" && requesterId !== id) {
+    return next(
+      new apiError("you are not authorized to deactivate this user", 403)
+    );
+  }
+  await User.findByIdAndUpdate(id, {
+    isActive: false,
+    deactivatedAt: Date.now(),
+  });
+  res.status(200).json({
+    status: "success",
+    message: "User deactivated successfully",
+  });
+});
+// @desc Get Logged User
+// @route GET /api/v1/users/getMe
+// @access Private
+const getLoggedUser = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user.id;
+
+  const user = await User.findById(userId).select(
+    "username email profilePic createdAt"
+  );
+  if (!user) {
+    return next(new apiError("User not found", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Logged user fetched successfully",
+    data: {
+      user,
+    },
+  });
+});
+// @desc Update Logged In User Password
+// @route PUT /api/v1/users/change-my-password
+// @access Private
+const updateLoggedInUserPassword = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user.id;
+  const { currentPassword, newPassword } = req.body;
+  const user = await User.findById(userId);
+  // 1) check if currentPassword == Real Password
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    return next(new apiError("Current password is incorrect", 401));
+  }
+
+  //2) hash password before save
+  user.password = await bcrypt.hash(newPassword, 12);
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Password updated successfully",
+  });
+});
+// @desc Update Logged User Data
+// @route PUT /api/v1/users/update-me
+// @access Private
+const updateLoggedUserData = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user.id;
+  const { username, email } = req.body;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return next(new apiError("User not found", 404));
+  }
+
+  if (username !== undefined) user.username = username;
+  if (email !== undefined) user.email = email;
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "User data updated successfully",
+  });
 });
 const getHistory = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user.id;
@@ -143,10 +270,16 @@ const removeFavorite = asyncErrorHandler(async (req, res, next) => {
     message: "Removed from favorites",
   });
 });
+
 module.exports = {
-  profile,
+  getLoggedUser,
+  updateLoggedInUserPassword,
+  updateLoggedUserData,
   getHistory,
   addfavorite,
   getFavorites,
   removeFavorite,
+  getAllUsers,
+  getUserById,
+  userDeactivate,
 };
