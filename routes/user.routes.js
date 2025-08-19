@@ -11,14 +11,14 @@ const {
   getAllUsers,
   getUserById,
   userDeactivate,
+  updateProfilePic,
 } = require("../controllers/user.controller");
 const { audioIdValidator } = require("../utils/validators/audioValidator");
+const upload = require("../config/multer");
 const router = express.Router();
 //! get all users
 router.get("/", authMiddleware(["user", "admin"]), getAllUsers);
 router.get("/getme", authMiddleware(["user"]), getLoggedUser);
-//! get specific user by id
-router.get("/:id", authMiddleware(["user", "admin"]), getUserById);
 //! deactivate user alternative for deletion
 router.put(
   "/:id/deactivate",
@@ -32,6 +32,14 @@ router.put(
   updateLoggedInUserPassword
 );
 router.put("/update-me", authMiddleware(["user"]), updateLoggedUserData);
+router.put(
+  "/update-profile-pic",
+  authMiddleware(["user"]),
+  upload.single("profile"),
+  updateProfilePic
+);
+//! get specific user by id
+router.get("/:id", authMiddleware(["user", "admin"]), getUserById);
 
 // User profile and data endpoints (no rate limiting - user's own data)
 router.get("/history", authMiddleware(["user", "admin"]), getHistory);

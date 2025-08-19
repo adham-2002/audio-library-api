@@ -270,6 +270,22 @@ const removeFavorite = asyncErrorHandler(async (req, res, next) => {
     message: "Removed from favorites",
   });
 });
+// @desc Update profile picture
+// @route PUT /api/v1/users/update-profile-pic
+// @access Private
+const updateProfilePic = asyncErrorHandler(async (req, res, next) => {
+  if (!req.file) return next(new apiError("No file uploaded", 400));
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { profilePic: req.file.path.replace(/\\/g, "/") },
+    { new: true }
+  ).select("profilePic");
+  res.status(200).json({
+    status: "success",
+    message: "Profile picture updated",
+    data: { profilePic: user.profilePic },
+  });
+});
 
 module.exports = {
   getLoggedUser,
@@ -282,4 +298,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   userDeactivate,
+  updateProfilePic,
 };
